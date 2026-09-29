@@ -1,0 +1,25 @@
+# Datos extraídos de Windsor.ai (connector instagram, cuenta tqr_ticketera 17841456098842282) el 2026-09-29
+# (fecha_utc, tipo, reach, views, likes, comments, saves, shares, media_engagement, profile_visits, avg_watch_ms, skip_rate, tema, cta, caption_chars, titulo)
+POSTS = [
+("2026-01-15T14:32","REEL",461,609,8,0,1,2,11,None,8393,0.595,"Comunidad / backstage","Suave (pregunta)",283,"Cierre 2025 festejando"),
+("2026-02-14T14:15","CAROUSEL",395,569,8,2,9,1,21,4,None,None,"Posicionamiento (no somos una ticketera más)","Escribinos",262,"TQR no es una ticketera más"),
+("2026-02-18T13:57","CAROUSEL",105,183,3,0,0,0,3,3,None,None,"Finanzas / cashflow","Consultanos",170,"Cobrás antes, cashflow"),
+("2026-02-20T15:00","CAROUSEL",435,663,6,0,1,0,7,0,None,None,"Datos / reportes","Conocé",236,"Sin datos, decisiones a ciegas"),
+("2026-02-23T12:20","REEL",552,684,13,0,8,3,25,None,8471,0.354,"Evento real (escala)","Sin CTA",176,"15.000 personas. Una sola noche"),
+("2026-02-25T15:30","CAROUSEL",107,159,3,0,0,0,4,0,None,None,"Operación / sistema","Sin CTA",270,"Un evento no se hace grande solo por la fiesta"),
+("2026-02-27T16:00","CAROUSEL",113,190,3,0,0,0,3,0,None,None,"Soporte / migración","Sin CTA",153,"Cambiar de plataforma no es problema"),
+("2026-03-01T14:53","REEL",639,752,6,0,1,1,11,None,3794,0.806,"Evento real (escala)","Sin CTA",170,"Esto no es solo una fiesta"),
+("2026-03-10T10:01","REEL",344,406,5,0,3,1,9,None,5915,0.601,"Operación / accesos","Palabra clave (EVENTO)",378,"Para que una fiesta funcione..."),
+("2026-03-12T22:02","CAROUSEL",175,261,1,0,0,0,1,2,None,None,"Datos / RRPP","Palabra clave (DATOS)",430,"En un boliche todo pasa rápido"),
+("2026-03-19T03:31","REEL",271,334,1,0,0,0,2,None,5313,0.688,"Operación / infraestructura","Comentá",395,"Gestionar este evento es posible"),
+("2026-03-26T15:52","REEL",271,293,4,0,1,0,5,None,4655,0.675,"Evento real (Wine Fest)","Palabra clave (EVENTO)",480,"Wine Fest en Blend"),
+("2026-04-02T14:13","REEL",239,260,9,0,0,0,10,None,5169,0.643,"Operación / control","Escribinos",190,"Cuando el evento crece..."),
+("2026-04-14T21:00","REEL",197,232,3,0,0,1,4,None,3568,0.785,"Operación / control","Sin CTA",108,"Podés vender todo el evento..."),
+("2026-04-16T15:01","CAROUSEL",109,194,3,0,0,0,3,0,None,None,"Producto / extras","Escribinos",131,"Cada extra suma"),
+("2026-04-22T21:02","REEL",144,174,3,0,0,0,3,None,4184,0.623,"Producto / onboarding","Escribinos",148,"Crear tu evento no debería ser un problema"),
+("2026-04-30T22:30","CAROUSEL",106,185,3,0,1,0,4,1,None,None,"Objeción (¿y si el QR falla?)","Escribinos",381,"¿Qué pasa si tu QR no funciona?"),
+("2026-05-11T21:02","CAROUSEL",76,130,2,0,0,0,2,0,None,None,"Caso cliente (RRPP)","Escribinos",560,"Muchos productores con RRPP..."),
+("2026-05-13T21:01","CAROUSEL",77,125,1,0,0,0,1,1,None,None,"Control / profesionalización","Demo",560,"Para el productor que ya tiene eventos"),
+("2026-05-20T21:01","REEL",239,308,3,0,0,0,4,None,6662,0.638,"Producto (más que ticketera)","Te mostramos",330,"Mientras vendés entradas..."),
+("2026-05-27T21:02","CAROUSEL",113,203,2,0,0,0,2,0,None,None,"Precio / service charge","Escribinos",480,"El precio final no es un detalle"),
+]
