@@ -1,0 +1,8 @@
+{
+  "nota": "Feeds RSS de medios con acceso libre. Verificá cada URL antes de usarla en producción y respetá los términos de uso de cada medio: solo se toman titular, resumen y enlace para reescribir y citar.",
+  "rss": [
+    { "nombre": "BBC Mundo", "url": "https://feeds.bbci.co.uk/mundo/rss.xml", "categoria": "mundo" },
+    { "nombre": "Infobae", "url": "https://www.infobae.com/arc/outboundfeeds/rss/", "categoria": "actualidad" }
+  ],
+  "maxPorFuente": 25
+}

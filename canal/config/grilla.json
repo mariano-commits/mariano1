@@ -1,0 +1,72 @@
+{
+  "zonaHoraria": "America/Argentina/Buenos_Aires",
+  "programas": [
+    {
+      "id": "morning",
+      "nombre": "Buen Día Digital",
+      "horario": "07:00",
+      "duracionMin": 180,
+      "estado": "fase-2",
+      "conductores": ["luma-rios", "teo-vidal"],
+      "secciones": ["titulares", "clima", "deportes", "tendencias", "cocina-express", "entrevista-experto-ia"],
+      "categorias": ["actualidad", "tecnologia", "ciencia", "deportes", "cocina", "clima", "entretenimiento", "curiosidades"],
+      "historiasObjetivo": 14
+    },
+    {
+      "id": "mesa",
+      "nombre": "La Mesa",
+      "horario": "10:00",
+      "duracionMin": 60,
+      "estado": "fase-2",
+      "conductores": ["dana-costa", "gael-orsi", "mora-bentancor"],
+      "secciones": ["tema-del-dia", "debate", "redes", "cierre"],
+      "categorias": ["actualidad", "tecnologia", "entretenimiento", "curiosidades"],
+      "historiasObjetivo": 4
+    },
+    {
+      "id": "noticiero",
+      "nombre": "Central IA",
+      "horario": "13:00",
+      "duracionMin": 10,
+      "estado": "mvp",
+      "conductores": ["ines-arce", "bruno-kel", "nube"],
+      "secciones": ["apertura", "notas", "deportes", "clima", "cierre"],
+      "categorias": ["mundo", "actualidad", "tecnologia", "ciencia", "deportes", "entretenimiento", "curiosidades", "clima"],
+      "historiasObjetivo": 6
+    },
+    {
+      "id": "infantil",
+      "nombre": "Zuri y Bolt",
+      "horario": "16:00",
+      "duracionMin": 30,
+      "estado": "fase-3",
+      "canal": "kids",
+      "conductores": ["zuri", "bolt"],
+      "secciones": ["aventura", "aprendemos", "cancion"],
+      "categorias": ["ciencia", "naturaleza", "curiosidades"],
+      "historiasObjetivo": 1
+    },
+    {
+      "id": "trivia",
+      "nombre": "¿Quién Sabe Más?",
+      "horario": "20:00",
+      "duracionMin": 30,
+      "estado": "fase-3",
+      "conductores": ["rafa-lune"],
+      "secciones": ["presentacion", "rondas", "final", "premio-audiencia"],
+      "categorias": ["ciencia", "deportes", "cocina", "entretenimiento", "curiosidades"],
+      "historiasObjetivo": 0
+    },
+    {
+      "id": "ficcion",
+      "nombre": "Serie original",
+      "horario": "21:00",
+      "duracionMin": 15,
+      "estado": "fase-4",
+      "conductores": [],
+      "secciones": ["episodio"],
+      "categorias": [],
+      "historiasObjetivo": 0
+    }
+  ]
+}

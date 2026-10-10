@@ -6,7 +6,10 @@
   "scripts": {
     "start": "npx remotion studio src/index.ts",
     "build": "npx remotion render src/index.ts MyComposition out/video.mp4",
-    "preview": "npx remotion studio src/index.ts"
+    "preview": "npx remotion studio src/index.ts",
+    "canal:noticiero": "tsx canal/src/pipeline/noticiero.ts",
+    "canal:test": "tsx --test canal/src/**/*.test.ts",
+    "canal:typecheck": "tsc -p canal"
   },
   "repository": {
     "type": "git",
@@ -16,6 +19,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.133.0",
     "@remotion/bundler": "^4.0.450",
     "@remotion/cli": "^4.0.450",
     "@remotion/compositor-linux-x64-gnu": "^4.0.450",
@@ -32,10 +36,14 @@
     "@remotion/zod-types": "^4.0.450",
     "react": "^19.2.5",
     "react-dom": "^19.2.5",
-    "remotion": "^4.0.450"
+    "remotion": "^4.0.450",
+    "zod": "4.3.6"
   },
   "devDependencies": {
+    "@types/node": "^26.6.5",
     "@types/react": "^19.2.14",
-    "@types/react-dom": "^19.2.3"
+    "@types/react-dom": "^19.2.3",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2"
   }
 }

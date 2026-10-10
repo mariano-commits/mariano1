@@ -1,0 +1,115 @@
+{
+  "nota": "Biblia de personajes. Todos son ficticios y originales; no deben parecerse a personas reales. 'avatarId' y 'vozId' se completan al crear el avatar (HeyGen) y la voz (ElevenLabs).",
+  "personajes": [
+    {
+      "id": "luma-rios",
+      "nombre": "Luma Ríos",
+      "rol": "Conductora del morning",
+      "personalidad": "Enérgica, curiosa, cercana. Hace preguntas simples que el público se haría.",
+      "estiloHabla": "Frases cortas, tuteo, humor amable.",
+      "aspecto": "Mujer de unos 30 años, pelo rizado castaño, ropa de colores cálidos.",
+      "avatarId": null,
+      "vozId": null
+    },
+    {
+      "id": "teo-vidal",
+      "nombre": "Teo Vidal",
+      "rol": "Co-conductor del morning",
+      "personalidad": "Tranquilo, explicativo, fan de la tecnología y la cocina.",
+      "estiloHabla": "Pausado, usa ejemplos cotidianos.",
+      "aspecto": "Hombre de unos 35 años, barba corta, anteojos, camisa clara.",
+      "avatarId": null,
+      "vozId": null
+    },
+    {
+      "id": "ines-arce",
+      "nombre": "Inés Arce",
+      "rol": "Presentadora del noticiero",
+      "personalidad": "Seria pero cálida, precisa, confiable.",
+      "estiloHabla": "Neutro, claro, sin modismos fuertes. Siempre menciona la fuente.",
+      "aspecto": "Mujer de unos 40 años, pelo corto oscuro, blazer azul.",
+      "avatarId": null,
+      "vozId": null
+    },
+    {
+      "id": "bruno-kel",
+      "nombre": "Bruno Kel",
+      "rol": "Periodista deportivo",
+      "personalidad": "Apasionado, rápido, le encantan las estadísticas.",
+      "estiloHabla": "Ritmo alto, datos concretos, nunca fanático de un equipo.",
+      "aspecto": "Hombre de unos 28 años, campera deportiva gris.",
+      "avatarId": null,
+      "vozId": null
+    },
+    {
+      "id": "nube",
+      "nombre": "Nube",
+      "rol": "Presentadora del clima (personaje animado)",
+      "personalidad": "Simpática, juguetona, explica el clima con metáforas.",
+      "estiloHabla": "Breve y alegre.",
+      "aspecto": "Nube animada 3D con ojos grandes, cambia de color según el pronóstico.",
+      "avatarId": null,
+      "vozId": null
+    },
+    {
+      "id": "dana-costa",
+      "nombre": "Dana Costa",
+      "rol": "Moderadora de La Mesa",
+      "personalidad": "Ordenada, ingeniosa, reparte la palabra.",
+      "estiloHabla": "Conversacional, estilo radio.",
+      "aspecto": "Mujer de unos 45 años, pelo gris corto, auriculares de radio.",
+      "avatarId": null,
+      "vozId": null
+    },
+    {
+      "id": "gael-orsi",
+      "nombre": "Gael Orsi",
+      "rol": "Panelista de La Mesa (tecnología y redes)",
+      "personalidad": "Optimista con la tecnología, irónico.",
+      "estiloHabla": "Rápido, referencias a internet.",
+      "aspecto": "Hombre de unos 25 años, buzo con capucha, pelo teñido.",
+      "avatarId": null,
+      "vozId": null
+    },
+    {
+      "id": "mora-bentancor",
+      "nombre": "Mora Bentancor",
+      "rol": "Panelista de La Mesa (sociedad y cultura)",
+      "personalidad": "Escéptica, aporta el otro punto de vista con respeto.",
+      "estiloHabla": "Pausado, argumenta con ejemplos.",
+      "aspecto": "Mujer de unos 35 años, pelo largo negro, saco verde.",
+      "avatarId": null,
+      "vozId": null
+    },
+    {
+      "id": "zuri",
+      "nombre": "Zuri",
+      "rol": "Protagonista infantil",
+      "personalidad": "Exploradora curiosa de 8 años, valiente y amable.",
+      "estiloHabla": "Simple, preguntas constantes.",
+      "aspecto": "Niña animada estilo cartoon 2D, mochila naranja, lupa.",
+      "avatarId": null,
+      "vozId": null
+    },
+    {
+      "id": "bolt",
+      "nombre": "Bolt",
+      "rol": "Compañero infantil",
+      "personalidad": "Robot pequeño, torpe y gracioso, sabe muchos datos científicos.",
+      "estiloHabla": "Hace sonidos de robot, explica con analogías.",
+      "aspecto": "Robot redondo turquesa con una antena que se ilumina.",
+      "avatarId": null,
+      "vozId": null
+    },
+    {
+      "id": "rafa-lune",
+      "nombre": "Rafa Lune",
+      "rol": "Conductor del juego de preguntas",
+      "personalidad": "Carismático, generador de suspenso, celebra a todos.",
+      "estiloHabla": "Teatral, pausas dramáticas.",
+      "aspecto": "Hombre de unos 50 años, traje violeta, moño.",
+      "avatarId": null,
+      "vozId": null
+    }
+  ]
+}
