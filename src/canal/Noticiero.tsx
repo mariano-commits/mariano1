@@ -83,7 +83,7 @@ const Apertura: React.FC<NoticieroProps> = ({programa, fecha, edicion}) => {
           style={{
             position: 'absolute',
             left: 0,
-            top: 300 + i * 200,
+            top: [170, 880, 905][i],
             width: 2200,
             height: i === 1 ? 14 : 4,
             background: i === 1 ? C.acento : C.tenue,
