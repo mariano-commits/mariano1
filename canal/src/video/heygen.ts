@@ -2,9 +2,9 @@
  * Adaptador de HeyGen (avatares parlantes). Aislado acá porque HeyGen está migrando
  * su API (v2 → v3): si cambia un endpoint o un campo, se toca solo este archivo.
  *
- * ⚠️ Escrito contra la API v2 documentada (POST /v2/video/generate + estado por
- * /v1/video_status.get) sin poder probarlo contra una cuenta real. Antes de producir,
- * correr una prueba con una sola escena: `npm run canal:video -- --heygen --escenas=1`.
+ * Usa la API v3 (POST /v3/videos, GET /v3/videos/{id}, GET /v3/avatars/looks).
+ * La v2 se da de baja el 2026-10-31 y no ve los looks de los avatares públicos.
+ * Para probar cambios: `npm run canal:video -- --demo --heygen --revisado --escenas=1`.
  */
 import fs from "node:fs";
 
@@ -34,6 +34,7 @@ async function llamar(ruta: string, init: RequestInit = {}): Promise<any> {
     throw new Error(`HeyGen ${ruta}: HTTP ${res.status} respuesta no JSON: ${cuerpo.slice(0, 200)}`);
   }
   if (!res.ok || json.error) {
+    // v3 devuelve { error: { code, message } }; v2 devolvía error null en respuestas OK.
     throw new Error(`HeyGen ${ruta}: HTTP ${res.status} ${JSON.stringify(json.error ?? json).slice(0, 300)}`);
   }
   return json;
@@ -48,17 +49,16 @@ export interface PedidoClip {
 
 /** Pide un clip de un solo avatar hablando. Devuelve el video_id. */
 export async function crearClip(p: PedidoClip): Promise<string> {
-  const json = await llamar("/v2/video/generate", {
+  const json = await llamar("/v3/videos", {
     method: "POST",
     body: JSON.stringify({
-      video_inputs: [
-        {
-          character: { type: "avatar", avatar_id: p.avatarId, avatar_style: "normal" },
-          voice: { type: "text", input_text: p.texto, voice_id: p.vozId },
-          background: { type: "color", value: p.colorFondo },
-        },
-      ],
-      dimension: { width: 1920, height: 1080 },
+      type: "avatar",
+      avatar_id: p.avatarId,
+      script: p.texto,
+      voice_id: p.vozId,
+      background: { type: "color", value: p.colorFondo },
+      aspect_ratio: "16:9",
+      resolution: "1080p",
     }),
   });
   const id = json?.data?.video_id;
@@ -70,11 +70,11 @@ export async function crearClip(p: PedidoClip): Promise<string> {
 export async function esperarClip(videoId: string, timeoutMin = 20): Promise<string> {
   const limite = Date.now() + timeoutMin * 60_000;
   while (Date.now() < limite) {
-    const json = await llamar(`/v1/video_status.get?video_id=${encodeURIComponent(videoId)}`);
+    const json = await llamar(`/v3/videos/${encodeURIComponent(videoId)}`);
     const d = json?.data ?? {};
     if (d.status === "completed" && d.video_url) return d.video_url;
     if (d.status === "failed" || d.status === "cancelled") {
-      throw new Error(`HeyGen falló el clip ${videoId}: ${JSON.stringify(d.error ?? d.failure_message ?? d).slice(0, 300)}`);
+      throw new Error(`HeyGen falló el clip ${videoId}: ${d.failure_code ?? ""} ${d.failure_message ?? JSON.stringify(d).slice(0, 300)}`);
     }
     await new Promise((r) => setTimeout(r, 10_000));
   }
@@ -96,12 +96,10 @@ export interface AvatarResuelto {
 const resueltos = new Map<string, Promise<AvatarResuelto>>();
 
 /**
- * Resuelve el avatar a usar:
- * - Si hay look ("corporate 2"), busca dentro del grupo el avatar_id de ese look.
- *   Si no lo encuentra o la consulta falla, usa el ID tal cual.
- * - Toma la voz por defecto del look o, si no viene, de los detalles del avatar.
- * ⚠️ Endpoints de grupos (/v2/avatar_group/{id}/avatars) y detalles (/v2/avatar/{id}/details)
- *    sin verificar contra una cuenta real: los avisos en consola dicen qué se resolvió.
+ * Resuelve el avatar a usar. `avatarId` puede ser un look o un grupo (personaje):
+ * - Si hay look ("corporate 2"), lista los looks del grupo y elige el único cuyo nombre lo contiene.
+ * - Sin look, o si no matchea, usa el ID tal cual (asumiendo que ya es un look).
+ * - La voz por defecto sale del look elegido o de GET /v3/avatars/looks/{id}.
  */
 export function resolverAvatar(avatarId: string, look?: string | null): Promise<AvatarResuelto> {
   const clave = `${avatarId}|${look ?? ""}`;
@@ -109,7 +107,18 @@ export function resolverAvatar(avatarId: string, look?: string | null): Promise<
   return resueltos.get(clave)!;
 }
 
-const vozDe = (a: any): string | null => a?.default_voice_id ?? a?.default_voice?.voice_id ?? null;
+async function looksDelGrupo(grupoId: string): Promise<any[]> {
+  const looks: any[] = [];
+  let token: string | null = null;
+  do {
+    const q = new URLSearchParams({ group_id: grupoId, limit: "50" });
+    if (token) q.set("token", token);
+    const json = await llamar(`/v3/avatars/looks?${q}`);
+    looks.push(...(json?.data ?? []));
+    token = json?.has_more ? json?.next_token : null;
+  } while (token);
+  return looks;
+}
 
 async function resolver(grupoId: string, look?: string | null): Promise<AvatarResuelto> {
   let avatarId = grupoId;
@@ -118,17 +127,16 @@ async function resolver(grupoId: string, look?: string | null): Promise<AvatarRe
   if (look) {
     const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, "");
     try {
-      const json = await llamar(`/v2/avatar_group/${encodeURIComponent(grupoId)}/avatars`);
-      const lista: any[] = json?.data?.avatar_list ?? json?.data?.avatars ?? [];
-      const candidatos = lista.filter((a) => norm(String(a.avatar_name ?? a.name ?? "")).includes(norm(look)));
+      const lista = await looksDelGrupo(grupoId);
+      const candidatos = lista.filter((a) => norm(String(a.name ?? "")).includes(norm(look)));
       if (candidatos.length === 1) {
-        avatarId = candidatos[0].avatar_id ?? candidatos[0].id;
-        vozDefecto = vozDe(candidatos[0]);
-        console.log(`   🎭 ${grupoId} · "${look}" → ${avatarId}`);
+        avatarId = candidatos[0].id;
+        vozDefecto = candidatos[0].default_voice_id ?? null;
+        console.log(`   🎭 ${grupoId} · "${look}" → ${avatarId} (${candidatos[0].name})`);
       } else {
         console.warn(
           `   ⚠️  Look "${look}" ${candidatos.length === 0 ? "no encontrado" : "ambiguo"} en ${grupoId}` +
-            ` (disponibles: ${lista.map((a) => a.avatar_name ?? a.name).join(", ") || "ninguno"}); uso el ID tal cual`,
+            ` (${(candidatos.length ? candidatos : lista).map((a) => a.name).join(", ") || "ninguno"}); uso el ID tal cual`,
         );
       }
     } catch (err) {
@@ -138,8 +146,8 @@ async function resolver(grupoId: string, look?: string | null): Promise<AvatarRe
 
   if (!vozDefecto) {
     try {
-      const json = await llamar(`/v2/avatar/${encodeURIComponent(avatarId)}/details`);
-      vozDefecto = vozDe(json?.data);
+      const json = await llamar(`/v3/avatars/looks/${encodeURIComponent(avatarId)}`);
+      vozDefecto = json?.data?.default_voice_id ?? null;
     } catch (err) {
       console.warn(`   ⚠️  No se pudo leer la voz por defecto de ${avatarId} (${err instanceof Error ? err.message : err})`);
     }
