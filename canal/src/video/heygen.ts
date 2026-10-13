@@ -87,37 +87,63 @@ export async function descargar(url: string, destino: string): Promise<void> {
   fs.writeFileSync(destino, Buffer.from(await res.arrayBuffer()));
 }
 
-const resueltos = new Map<string, Promise<string>>();
+export interface AvatarResuelto {
+  avatarId: string;
+  /** Voz por defecto del avatar según HeyGen (se usa si el personaje no tiene vozId). */
+  vozDefecto: string | null;
+}
+
+const resueltos = new Map<string, Promise<AvatarResuelto>>();
 
 /**
- * Si el personaje tiene un look ("corporate 2"), busca dentro del grupo de avatares
- * el avatar_id de ese look. Si el ID ya es el del look o la consulta falla, usa el ID tal cual.
- * ⚠️ Endpoint de grupos (/v2/avatar_group/{id}/avatars) sin verificar contra una cuenta real.
+ * Resuelve el avatar a usar:
+ * - Si hay look ("corporate 2"), busca dentro del grupo el avatar_id de ese look.
+ *   Si no lo encuentra o la consulta falla, usa el ID tal cual.
+ * - Toma la voz por defecto del look o, si no viene, de los detalles del avatar.
+ * ⚠️ Endpoints de grupos (/v2/avatar_group/{id}/avatars) y detalles (/v2/avatar/{id}/details)
+ *    sin verificar contra una cuenta real: los avisos en consola dicen qué se resolvió.
  */
-export function resolverAvatar(avatarId: string, look?: string | null): Promise<string> {
-  if (!look) return Promise.resolve(avatarId);
-  const clave = `${avatarId}|${look}`;
-  if (!resueltos.has(clave)) resueltos.set(clave, buscarLook(avatarId, look));
+export function resolverAvatar(avatarId: string, look?: string | null): Promise<AvatarResuelto> {
+  const clave = `${avatarId}|${look ?? ""}`;
+  if (!resueltos.has(clave)) resueltos.set(clave, resolver(avatarId, look));
   return resueltos.get(clave)!;
 }
 
-async function buscarLook(grupoId: string, look: string): Promise<string> {
-  const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, "");
-  try {
-    const json = await llamar(`/v2/avatar_group/${encodeURIComponent(grupoId)}/avatars`);
-    const lista: any[] = json?.data?.avatar_list ?? json?.data?.avatars ?? [];
-    const candidatos = lista.filter((a) => norm(String(a.avatar_name ?? a.name ?? "")).includes(norm(look)));
-    if (candidatos.length === 1) {
-      const id = candidatos[0].avatar_id ?? candidatos[0].id;
-      console.log(`   🎭 ${grupoId} · "${look}" → ${id}`);
-      return id;
+const vozDe = (a: any): string | null => a?.default_voice_id ?? a?.default_voice?.voice_id ?? null;
+
+async function resolver(grupoId: string, look?: string | null): Promise<AvatarResuelto> {
+  let avatarId = grupoId;
+  let vozDefecto: string | null = null;
+
+  if (look) {
+    const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, "");
+    try {
+      const json = await llamar(`/v2/avatar_group/${encodeURIComponent(grupoId)}/avatars`);
+      const lista: any[] = json?.data?.avatar_list ?? json?.data?.avatars ?? [];
+      const candidatos = lista.filter((a) => norm(String(a.avatar_name ?? a.name ?? "")).includes(norm(look)));
+      if (candidatos.length === 1) {
+        avatarId = candidatos[0].avatar_id ?? candidatos[0].id;
+        vozDefecto = vozDe(candidatos[0]);
+        console.log(`   🎭 ${grupoId} · "${look}" → ${avatarId}`);
+      } else {
+        console.warn(
+          `   ⚠️  Look "${look}" ${candidatos.length === 0 ? "no encontrado" : "ambiguo"} en ${grupoId}` +
+            ` (disponibles: ${lista.map((a) => a.avatar_name ?? a.name).join(", ") || "ninguno"}); uso el ID tal cual`,
+        );
+      }
+    } catch (err) {
+      console.warn(`   ⚠️  No se pudo resolver el look "${look}" (${err instanceof Error ? err.message : err}); uso el ID tal cual`);
     }
-    console.warn(
-      `   ⚠️  Look "${look}" ${candidatos.length === 0 ? "no encontrado" : "ambiguo"} en ${grupoId}` +
-        ` (disponibles: ${lista.map((a) => a.avatar_name ?? a.name).join(", ") || "ninguno"}); uso el ID tal cual`,
-    );
-  } catch (err) {
-    console.warn(`   ⚠️  No se pudo resolver el look "${look}" (${err instanceof Error ? err.message : err}); uso el ID tal cual`);
   }
-  return grupoId;
+
+  if (!vozDefecto) {
+    try {
+      const json = await llamar(`/v2/avatar/${encodeURIComponent(avatarId)}/details`);
+      vozDefecto = vozDe(json?.data);
+    } catch (err) {
+      console.warn(`   ⚠️  No se pudo leer la voz por defecto de ${avatarId} (${err instanceof Error ? err.message : err})`);
+    }
+  }
+  if (vozDefecto) console.log(`   🔊 ${avatarId}: voz por defecto ${vozDefecto}`);
+  return { avatarId, vozDefecto };
 }

@@ -76,7 +76,7 @@ guion aprobado ─► por escena: ¿el personaje tiene avatarId + vozId?
 - **Caché:** cada clip se nombra con un hash del avatar, la voz y el texto, así que re-correr no vuelve a pagar escenas que no cambiaron.
 - **Duración real:** se lee del MP4 descargado con `@remotion/media-parser`, no de la API.
 - **Adaptador HeyGen** (`src/video/heygen.ts`): está escrito contra la API v2 (`/v2/video/generate` y `/v1/video_status.get`), pero **sin probar contra una cuenta real**. HeyGen está migrando a v3, así que hay que probar primero con `--escenas=1`.
-- **Personajes:** completá `avatarId` (HeyGen) y `vozId` (voz de HeyGen; las voces de ElevenLabs se pueden vincular desde la cuenta de HeyGen) en `config/personajes.json`. Para Nube, el personaje animado, se necesita un avatar a partir de una imagen animada; mientras no lo tenga, sale como borrador.
+- **Personajes:** completá `avatarId` (HeyGen), `avatarLook` (versión, opcional) y `vozId` (si es `null`, se usa la voz por defecto del avatar) (voz de HeyGen; las voces de ElevenLabs se pueden vincular desde la cuenta de HeyGen) en `config/personajes.json`. Para Nube, el personaje animado, se necesita un avatar a partir de una imagen animada; mientras no lo tenga, sale como borrador.
 - **Diseño:** editar `src/canal/Noticiero.tsx`. Para previsualizarlo, `npm start` abre Remotion Studio con la composición "Noticiero".
 
 Salida en `canal/salida/<fecha>/noticiero/`:

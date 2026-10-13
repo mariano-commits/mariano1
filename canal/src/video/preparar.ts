@@ -41,15 +41,18 @@ export async function prepararNoticiero(
       fuentes: [...new Set(e.fuentes.map((id) => fuentes.get(id)).filter((f): f is string => Boolean(f)))],
     };
 
-    if (op.usarHeygen && p?.avatarId && p.vozId) {
+    // Sin vozId propio se usa la voz por defecto del avatar en HeyGen.
+    const avatar = op.usarHeygen && p?.avatarId ? await resolverAvatar(p.avatarId, p.avatarLook) : null;
+    const vozId = p?.vozId ?? avatar?.vozDefecto ?? null;
+
+    if (avatar && vozId) {
       // Nombre por hash del contenido: re-correr no vuelve a pagar clips ya generados.
-      const avatarId = await resolverAvatar(p.avatarId, p.avatarLook);
-      const hash = createHash("sha1").update(`${avatarId}|${p.vozId}|${e.texto}`).digest("hex").slice(0, 10);
+      const hash = createHash("sha1").update(`${avatar.avatarId}|${vozId}|${e.texto}`).digest("hex").slice(0, 10);
       const relativo = `${op.carpetaPublica}/escena-${String(i + 1).padStart(2, "0")}-${hash}.mp4`;
       const absoluto = path.join("public", relativo);
       if (!fs.existsSync(absoluto)) {
         console.log(`   🎬 HeyGen escena ${i + 1} (${base.personaje.nombre})…`);
-        const id = await crearClip({ avatarId, vozId: p.vozId, texto: e.texto, colorFondo: COLOR_FONDO });
+        const id = await crearClip({ avatarId: avatar.avatarId, vozId, texto: e.texto, colorFondo: COLOR_FONDO });
         await descargar(await esperarClip(id), absoluto);
       } else {
         console.log(`   ♻️  escena ${i + 1}: clip en caché`);
@@ -58,7 +61,7 @@ export async function prepararNoticiero(
     }
 
     if (op.usarHeygen) {
-      const falta = [!p?.avatarId && "avatarId", !p?.vozId && "vozId"].filter(Boolean).join(" y ");
+      const falta = !p?.avatarId ? "avatarId" : "vozId (ni voz por defecto en HeyGen)";
       console.log(`   📝 escena ${i + 1}: ${base.personaje.nombre} sin ${falta} → borrador`);
     }
     const palabras = e.texto.split(/\s+/).filter(Boolean).length;

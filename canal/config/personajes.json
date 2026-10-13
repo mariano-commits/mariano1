@@ -1,5 +1,5 @@
 {
-  "nota": "Biblia de personajes. Todos son ficticios y originales; no deben parecerse a personas reales. 'avatarId' es el ID del avatar en HeyGen; 'avatarLook' (opcional) es el nombre de la versión o look dentro de ese avatar; 'vozId' es el voice_id de HeyGen.",
+  "nota": "Biblia de personajes. Todos son ficticios y originales; no deben parecerse a personas reales. 'avatarId' es el ID del avatar en HeyGen; 'avatarLook' (opcional) es el nombre de la versión o look dentro de ese avatar; 'vozId' es el voice_id de HeyGen; si es null se usa la voz por defecto del avatar.",
   "personajes": [
     {
       "id": "luma-rios",
