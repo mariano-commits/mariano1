@@ -9,7 +9,8 @@
     "preview": "npx remotion studio src/index.ts",
     "canal:noticiero": "tsx canal/src/pipeline/noticiero.ts",
     "canal:test": "tsx --test canal/src/**/*.test.ts",
-    "canal:typecheck": "tsc -p canal"
+    "canal:typecheck": "tsc -p canal",
+    "canal:video": "tsx canal/src/pipeline/video.ts"
   },
   "repository": {
     "type": "git",
@@ -44,6 +45,6 @@
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "tsx": "^4.23.15",
-    "typescript": "^7.0.2"
+    "typescript": "^5.9.3"
   }
 }
