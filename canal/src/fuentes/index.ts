@@ -1,6 +1,7 @@
 import type { Historia } from "../esquemas";
 import { cargarFuentes } from "../config";
 import { historiasDeEjemplo } from "./ejemplo";
+import { leerClima } from "./clima";
 import { leerRss } from "./rss";
 
 export type NombreFuente = "ejemplo" | "rss";
@@ -10,8 +11,17 @@ export type NombreFuente = "ejemplo" | "rss";
  * YouTube Data API, API-Football, etc., agregar un adaptador que devuelva Historia[].
  */
 export async function investigar(fuente: NombreFuente): Promise<Historia[]> {
-  const historias = fuente === "ejemplo" ? historiasDeEjemplo() : await leerRss(cargarFuentes());
-  return deduplicar(historias);
+  if (fuente === "ejemplo") return deduplicar(historiasDeEjemplo());
+  const config = cargarFuentes();
+  console.log(`🌍 Región: ${config.nombreRegion} · ${config.rss.length} feeds${config.clima ? ` + clima (${config.clima.fuente})` : ""}`);
+  const [noticias, clima] = await Promise.all([
+    leerRss(config),
+    leerClima(config).catch((err) => {
+      console.warn(`⚠️  Sin clima: ${err instanceof Error ? err.message : err}`);
+      return [];
+    }),
+  ]);
+  return deduplicar([...noticias, ...clima]);
 }
 
 function deduplicar(historias: Historia[]): Historia[] {

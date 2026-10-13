@@ -3,13 +3,22 @@ import {
   AbsoluteFill,
   interpolate,
   OffthreadVideo,
+  Sequence,
   Series,
   spring,
   staticFile,
   useCurrentFrame,
   useVideoConfig,
 } from 'remotion';
-import {FPS, SEG_CORTINA, type EscenaVideo, type NoticieroProps} from './tipos';
+import {
+  FPS,
+  framesPortada,
+  MAX_TITULARES_SUMARIO,
+  SEG_APERTURA,
+  SEG_POR_TITULAR,
+  type EscenaVideo,
+  type NoticieroProps,
+} from './tipos';
 
 const C = {
   fondo: '#0b1426',
@@ -22,11 +31,15 @@ const C = {
 const FUENTE = "'Inter', 'Helvetica Neue', Arial, sans-serif";
 
 export const Noticiero: React.FC<NoticieroProps> = (props) => {
+  const portada = framesPortada(props);
   return (
     <AbsoluteFill style={{backgroundColor: C.fondo, fontFamily: FUENTE, color: C.texto}}>
       <Series>
-        <Series.Sequence durationInFrames={SEG_CORTINA * FPS}>
-          <Cortina {...props} />
+        <Series.Sequence durationInFrames={Math.round(SEG_APERTURA * FPS)}>
+          <Apertura {...props} />
+        </Series.Sequence>
+        <Series.Sequence durationInFrames={portada - Math.round(SEG_APERTURA * FPS)}>
+          <Sumario titulares={props.titulares.slice(0, MAX_TITULARES_SUMARIO)} />
         </Series.Sequence>
         {props.escenas.map((e, i) => (
           <Series.Sequence key={i} durationInFrames={Math.max(1, Math.round(e.duracionSeg * FPS))}>
@@ -34,33 +47,129 @@ export const Noticiero: React.FC<NoticieroProps> = (props) => {
           </Series.Sequence>
         ))}
       </Series>
-      <Mosca programa={props.programa} />
-      <Ticker titulares={props.titulares} />
+      {/* Mosca y ticker solo sobre el programa, no sobre la portada. */}
+      <Sequence from={portada} layout="none">
+        <Mosca programa={props.programa} />
+        <Ticker titulares={props.titulares} />
+      </Sequence>
     </AbsoluteFill>
   );
 };
 
-const Cortina: React.FC<NoticieroProps> = ({programa, titulo, fecha}) => {
+/** Apertura: barras que barren la pantalla, entra la marca, la edición y la fecha. */
+const Apertura: React.FC<NoticieroProps> = ({programa, fecha, edicion}) => {
   const frame = useCurrentFrame();
-  const {fps} = useVideoConfig();
-  const entrada = spring({frame, fps, config: {damping: 14}});
-  const salida = interpolate(frame, [SEG_CORTINA * fps - 12, SEG_CORTINA * fps], [1, 0], {extrapolateLeft: 'clamp'});
+  const {fps, durationInFrames} = useVideoConfig();
+  const barra = (retraso: number) =>
+    interpolate(spring({frame: frame - retraso, fps, config: {damping: 20}}), [0, 1], [-2200, 0]);
+  const marca = spring({frame: frame - 18, fps, config: {damping: 12}});
+  const linea = spring({frame: frame - 30, fps, config: {damping: 18}});
+  const datos = interpolate(frame, [42, 58], [0, 1], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'});
+  const salida = interpolate(frame, [durationInFrames - 12, durationInFrames], [1, 0], {extrapolateLeft: 'clamp'});
+  const brillo = interpolate(frame, [0, durationInFrames], [-30, 130]);
   return (
     <AbsoluteFill
       style={{
-        background: `radial-gradient(circle at 30% 30%, ${C.fondo2}, ${C.fondo})`,
+        background: `radial-gradient(circle at 50% 45%, ${C.fondo2}, ${C.fondo} 70%)`,
         justifyContent: 'center',
         alignItems: 'center',
         opacity: salida,
+        overflow: 'hidden',
       }}
     >
-      <div style={{transform: `scale(${0.8 + 0.2 * entrada})`, textAlign: 'center'}}>
-        <div style={{fontSize: 140, fontWeight: 900, letterSpacing: -4}}>
+      {[0, 4, 8].map((r, i) => (
+        <div
+          key={i}
+          style={{
+            position: 'absolute',
+            left: 0,
+            top: 300 + i * 200,
+            width: 2200,
+            height: i === 1 ? 14 : 4,
+            background: i === 1 ? C.acento : C.tenue,
+            opacity: i === 1 ? 0.9 : 0.25,
+            transform: `translateX(${i % 2 ? -barra(r) : barra(r)}px)`,
+          }}
+        />
+      ))}
+      <div style={{textAlign: 'center', transform: `scale(${0.6 + 0.4 * marca})`, opacity: marca}}>
+        <div
+          style={{
+            fontSize: 190,
+            fontWeight: 900,
+            letterSpacing: -6,
+            backgroundImage: `linear-gradient(100deg, #fff 0%, #fff ${brillo - 10}%, ${C.acento} ${brillo}%, #fff ${brillo + 10}%, #fff 100%)`,
+            WebkitBackgroundClip: 'text',
+            color: 'transparent',
+          }}
+        >
           {programa.toUpperCase()}
         </div>
-        <div style={{height: 8, width: 360 * entrada, background: C.acento, margin: '24px auto'}} />
-        <div style={{fontSize: 44, color: C.tenue}}>{fecha}</div>
-        <div style={{fontSize: 52, marginTop: 40, maxWidth: 1400}}>{titulo}</div>
+        <div style={{height: 10, width: 520 * linea, background: C.acento, margin: '10px auto 34px'}} />
+        <div style={{opacity: datos, transform: `translateY(${(1 - datos) * 20}px)`}}>
+          {edicion && (
+            <div style={{fontSize: 46, fontWeight: 800, letterSpacing: 8, color: C.acento}}>{edicion.toUpperCase()}</div>
+          )}
+          <div style={{fontSize: 40, color: C.tenue, marginTop: 14}}>{fecha}</div>
+        </div>
+      </div>
+    </AbsoluteFill>
+  );
+};
+
+/** Sumario: "Hoy en el programa" y los titulares, uno por uno. */
+const Sumario: React.FC<{titulares: string[]}> = ({titulares}) => {
+  const frame = useCurrentFrame();
+  const {fps, durationInFrames} = useVideoConfig();
+  const porTitular = SEG_POR_TITULAR * fps;
+  const actual = Math.min(titulares.length - 1, Math.floor(frame / porTitular));
+  const local = frame - actual * porTitular;
+  const entrada = spring({frame: local, fps, config: {damping: 16}});
+  const entradaTitulo = spring({frame, fps, config: {damping: 16}});
+  const salida = interpolate(frame, [durationInFrames - 10, durationInFrames], [1, 0], {extrapolateLeft: 'clamp'});
+  return (
+    <AbsoluteFill
+      style={{
+        background: `linear-gradient(135deg, ${C.fondo2}, ${C.fondo})`,
+        padding: '0 160px',
+        justifyContent: 'center',
+        opacity: salida,
+      }}
+    >
+      <div
+        style={{
+          fontSize: 38,
+          fontWeight: 800,
+          letterSpacing: 6,
+          color: C.acento,
+          transform: `translateX(${(1 - entradaTitulo) * -200}px)`,
+        }}
+      >
+        HOY EN EL PROGRAMA
+      </div>
+      <div style={{display: 'flex', alignItems: 'flex-start', gap: 40, marginTop: 40, minHeight: 260}}>
+        <div style={{fontSize: 130, fontWeight: 900, color: C.acento, lineHeight: 1, opacity: entrada}}>
+          {actual + 1}
+        </div>
+        <div
+          style={{
+            fontSize: 72,
+            fontWeight: 800,
+            lineHeight: 1.15,
+            opacity: entrada,
+            transform: `translateY(${(1 - entrada) * 40}px)`,
+          }}
+        >
+          {titulares[actual]}
+        </div>
+      </div>
+      <div style={{display: 'flex', gap: 14, marginTop: 50}}>
+        {titulares.map((_, i) => (
+          <div
+            key={i}
+            style={{height: 8, width: 90, background: i <= actual ? C.acento : 'rgba(255,255,255,0.2)'}}
+          />
+        ))}
       </div>
     </AbsoluteFill>
   );

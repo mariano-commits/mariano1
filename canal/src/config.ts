@@ -29,11 +29,38 @@ export function cargarPersonajes(ids: string[]): Personaje[] {
   });
 }
 
+export interface FeedRss {
+  nombre: string;
+  url: string;
+  categoria: string;
+}
+
+export interface CiudadClima {
+  nombre: string;
+  lat: number;
+  lon: number;
+}
+
 export interface ConfigFuentes {
-  rss: { nombre: string; url: string; categoria: string }[];
+  region: string;
+  nombreRegion: string;
+  zonaHoraria: string;
+  rss: FeedRss[];
+  clima?: { fuente: string; ciudades: CiudadClima[] };
   maxPorFuente: number;
 }
 
-export function cargarFuentes(): ConfigFuentes {
-  return leerJson<ConfigFuentes>("config/fuentes.json");
+interface ArchivoFuentes {
+  region: string;
+  maxPorFuente: number;
+  regiones: Record<string, { nombre: string; zonaHoraria: string; rss: FeedRss[]; clima?: ConfigFuentes["clima"] }>;
+}
+
+/** Fuentes de la región pedida (CANAL_REGION, o la `region` por defecto de config/fuentes.json). */
+export function cargarFuentes(region = process.env.CANAL_REGION): ConfigFuentes {
+  const archivo = leerJson<ArchivoFuentes>("config/fuentes.json");
+  const id = region ?? archivo.region;
+  const r = archivo.regiones[id];
+  if (!r) throw new Error(`Región "${id}" no existe en config/fuentes.json (hay: ${Object.keys(archivo.regiones).join(", ")})`);
+  return { region: id, nombreRegion: r.nombre, zonaHoraria: r.zonaHoraria, rss: r.rss, clima: r.clima, maxPorFuente: archivo.maxPorFuente };
 }

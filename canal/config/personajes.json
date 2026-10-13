@@ -29,9 +29,9 @@
       "rol": "Presentadora del noticiero",
       "personalidad": "Seria pero cálida, precisa, confiable.",
       "estiloHabla": "Neutro, claro, sin modismos fuertes. Siempre menciona la fuente.",
-      "aspecto": "Mujer de unos 40 años, pelo corto oscuro, blazer azul.",
-      "avatarId": "d088cabc97cf4c7aaeb3f2e8a23df4bb",
-      "avatarLook": "corporate 2",
+      "aspecto": "Mujer de unos 40 años, pelo corto oscuro, blazer azul. Sentada en el escritorio de una redacción de TV.",
+      "avatarId": "b5b31bdcc445a7076b751856b980dd35",
+      "avatarLook": null,
       "vozId": "7e5eebc368ab477a9175b7d2a2c3317e"
     },
     {
@@ -40,9 +40,9 @@
       "rol": "Periodista deportivo",
       "personalidad": "Apasionado, rápido, le encantan las estadísticas.",
       "estiloHabla": "Ritmo alto, datos concretos, nunca fanático de un equipo.",
-      "aspecto": "Hombre de unos 28 años, campera deportiva gris.",
-      "avatarId": "49add24d66c94fd4b36c1b5afcec3bb8",
-      "avatarLook": "corporate 1",
+      "aspecto": "Hombre de unos 28 años, pelo castaño corto, traje oscuro. Set deportivo con estadio de fútbol en las pantallas.",
+      "avatarId": "aec5a2563cb517712ea15df4d85f4a7a",
+      "avatarLook": null,
       "vozId": "87bf17e8c82a4e1a966a5fbca3cab12c"
     },
     {

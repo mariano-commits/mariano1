@@ -16,10 +16,18 @@ export type NoticieroProps = {
   fecha: string;
   titulares: string[];
   escenas: EscenaVideo[];
+  /** Edición regional que se muestra en la portada (ej. "Edición España"). */
+  edicion?: string;
 };
 
 export const FPS = 30;
-export const SEG_CORTINA = 3;
+/** Portada: apertura con la marca + sumario con un titular cada SEG_POR_TITULAR. */
+export const SEG_APERTURA = 6;
+export const SEG_POR_TITULAR = 2.5;
+export const MAX_TITULARES_SUMARIO = 5;
+
+export const framesPortada = (p: NoticieroProps): number =>
+  Math.round((SEG_APERTURA + Math.min(p.titulares.length, MAX_TITULARES_SUMARIO) * SEG_POR_TITULAR) * FPS);
 
 export const duracionTotalFrames = (p: NoticieroProps): number =>
-  Math.round(SEG_CORTINA * FPS) + p.escenas.reduce((acc, e) => acc + Math.max(1, Math.round(e.duracionSeg * FPS)), 0);
+  framesPortada(p) + p.escenas.reduce((acc, e) => acc + Math.max(1, Math.round(e.duracionSeg * FPS)), 0);

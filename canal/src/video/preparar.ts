@@ -4,6 +4,7 @@ import path from "node:path";
 import { parseMedia } from "@remotion/media-parser";
 import { nodeReader } from "@remotion/media-parser/node";
 import type { EscenaVideo, NoticieroProps } from "../../../src/canal/tipos";
+import { cargarFuentes } from "../config";
 import type { Guion, Historia, Personaje, Programa } from "../esquemas";
 import { crearClip, descargar, esperarClip, resolverAvatar } from "./heygen";
 
@@ -68,10 +69,18 @@ export async function prepararNoticiero(
     return { ...base, videoSrc: null, duracionSeg: Math.max(3, Math.ceil(palabras / PALABRAS_POR_SEG)) };
   });
 
+  const region = cargarFuentes();
   return {
     programa: programa.nombre,
     titulo: guion.titulo,
-    fecha: new Date().toLocaleDateString("es-AR", { weekday: "long", day: "numeric", month: "long", year: "numeric" }),
+    fecha: new Date().toLocaleDateString(region.region === "es" ? "es-ES" : "es-AR", {
+      weekday: "long",
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+      timeZone: region.zonaHoraria,
+    }),
+    edicion: `Edición ${region.nombreRegion}`,
     titulares,
     escenas: resultado,
   };

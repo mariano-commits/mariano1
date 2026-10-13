@@ -1,8 +1,45 @@
 {
-  "nota": "Feeds RSS de medios con acceso libre. Verificá cada URL antes de usarla en producción y respetá los términos de uso de cada medio: solo se toman titular, resumen y enlace para reescribir y citar.",
-  "rss": [
-    { "nombre": "BBC Mundo", "url": "https://feeds.bbci.co.uk/mundo/rss.xml", "categoria": "mundo" },
-    { "nombre": "Infobae", "url": "https://www.infobae.com/arc/outboundfeeds/rss/", "categoria": "actualidad" }
-  ],
-  "maxPorFuente": 25
+  "nota": "Fuentes por región. Feeds RSS de medios con acceso libre: solo se toman titular, resumen y enlace para reescribir y citar. La categoría sale de la sección del feed; los feeds de portada entran como 'actualidad' y los filtros de cumplimiento descartan política y conflictos. Verificado 2026-10-13. Las portadas van al final: al deduplicar gana la versión del feed de sección, que trae mejor categoría.",
+  "region": "es",
+  "maxPorFuente": 10,
+  "regiones": {
+    "es": {
+      "nombre": "España",
+      "zonaHoraria": "Europe/Madrid",
+      "rss": [
+        { "nombre": "El País", "url": "https://feeds.elpais.com/mrss-s/pages/ep/site/elpais.com/section/ciencia/portada", "categoria": "ciencia" },
+        { "nombre": "20minutos", "url": "https://www.20minutos.es/rss/ciencia/", "categoria": "ciencia" },
+        { "nombre": "Infosalus (Europa Press)", "url": "https://www.europapress.es/rss/rss.aspx?ch=00669", "categoria": "salud" },
+        { "nombre": "El País", "url": "https://feeds.elpais.com/mrss-s/pages/ep/site/elpais.com/section/tecnologia/portada", "categoria": "tecnologia" },
+        { "nombre": "Xataka", "url": "https://www.xataka.com/feedburner.xml", "categoria": "tecnologia" },
+        { "nombre": "El País", "url": "https://feeds.elpais.com/mrss-s/pages/ep/site/elpais.com/section/deportes/portada", "categoria": "deportes" },
+        { "nombre": "20minutos", "url": "https://www.20minutos.es/rss/deportes/", "categoria": "deportes" },
+        { "nombre": "El País", "url": "https://feeds.elpais.com/mrss-s/pages/ep/site/elpais.com/section/cultura/portada", "categoria": "entretenimiento" },
+        { "nombre": "20minutos", "url": "https://www.20minutos.es/rss/cultura/", "categoria": "entretenimiento" },
+        { "nombre": "20minutos", "url": "https://www.20minutos.es/rss/gastronomia/", "categoria": "cocina" },
+        { "nombre": "El País", "url": "https://feeds.elpais.com/mrss-s/pages/ep/site/elpais.com/portada", "categoria": "actualidad" },
+        { "nombre": "La Vanguardia", "url": "https://www.lavanguardia.com/rss/home.xml", "categoria": "actualidad" }
+      ],
+      "clima": {
+        "fuente": "Open-Meteo",
+        "ciudades": [
+          { "nombre": "Madrid", "lat": 40.42, "lon": -3.7 },
+          { "nombre": "Barcelona", "lat": 41.39, "lon": 2.17 },
+          { "nombre": "Valencia", "lat": 39.47, "lon": -0.38 },
+          { "nombre": "Sevilla", "lat": 37.39, "lon": -5.98 },
+          { "nombre": "Bilbao", "lat": 43.26, "lon": -2.93 },
+          { "nombre": "A Coruña", "lat": 43.36, "lon": -8.41 },
+          { "nombre": "Las Palmas", "lat": 28.12, "lon": -15.44 }
+        ]
+      }
+    },
+    "latam": {
+      "nombre": "Latinoamérica",
+      "zonaHoraria": "America/Argentina/Buenos_Aires",
+      "rss": [
+        { "nombre": "BBC Mundo", "url": "https://feeds.bbci.co.uk/mundo/rss.xml", "categoria": "mundo" },
+        { "nombre": "Infobae", "url": "https://www.infobae.com/arc/outboundfeeds/rss/", "categoria": "actualidad" }
+      ]
+    }
+  }
 }
