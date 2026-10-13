@@ -1,5 +1,5 @@
 {
-  "nota": "Biblia de personajes. Todos son ficticios y originales; no deben parecerse a personas reales. 'avatarId' y 'vozId' se completan al crear el avatar (HeyGen) y la voz (ElevenLabs).",
+  "nota": "Biblia de personajes. Todos son ficticios y originales; no deben parecerse a personas reales. 'avatarId' es el ID del avatar en HeyGen; 'avatarLook' (opcional) es el nombre de la versión o look dentro de ese avatar; 'vozId' es el voice_id de HeyGen.",
   "personajes": [
     {
       "id": "luma-rios",
@@ -9,6 +9,7 @@
       "estiloHabla": "Frases cortas, tuteo, humor amable.",
       "aspecto": "Mujer de unos 30 años, pelo rizado castaño, ropa de colores cálidos.",
       "avatarId": null,
+      "avatarLook": null,
       "vozId": null
     },
     {
@@ -19,6 +20,7 @@
       "estiloHabla": "Pausado, usa ejemplos cotidianos.",
       "aspecto": "Hombre de unos 35 años, barba corta, anteojos, camisa clara.",
       "avatarId": null,
+      "avatarLook": null,
       "vozId": null
     },
     {
@@ -28,7 +30,8 @@
       "personalidad": "Seria pero cálida, precisa, confiable.",
       "estiloHabla": "Neutro, claro, sin modismos fuertes. Siempre menciona la fuente.",
       "aspecto": "Mujer de unos 40 años, pelo corto oscuro, blazer azul.",
-      "avatarId": null,
+      "avatarId": "d088cabc97cf4c7aaeb3f2e8a23df4bb",
+      "avatarLook": "corporate 2",
       "vozId": null
     },
     {
@@ -38,7 +41,8 @@
       "personalidad": "Apasionado, rápido, le encantan las estadísticas.",
       "estiloHabla": "Ritmo alto, datos concretos, nunca fanático de un equipo.",
       "aspecto": "Hombre de unos 28 años, campera deportiva gris.",
-      "avatarId": null,
+      "avatarId": "49add24d66c94fd4b36c1b5afcec3bb8",
+      "avatarLook": "corporate 1",
       "vozId": null
     },
     {
@@ -49,6 +53,7 @@
       "estiloHabla": "Breve y alegre.",
       "aspecto": "Nube animada 3D con ojos grandes, cambia de color según el pronóstico.",
       "avatarId": null,
+      "avatarLook": null,
       "vozId": null
     },
     {
@@ -59,6 +64,7 @@
       "estiloHabla": "Conversacional, estilo radio.",
       "aspecto": "Mujer de unos 45 años, pelo gris corto, auriculares de radio.",
       "avatarId": null,
+      "avatarLook": null,
       "vozId": null
     },
     {
@@ -69,6 +75,7 @@
       "estiloHabla": "Rápido, referencias a internet.",
       "aspecto": "Hombre de unos 25 años, buzo con capucha, pelo teñido.",
       "avatarId": null,
+      "avatarLook": null,
       "vozId": null
     },
     {
@@ -79,6 +86,7 @@
       "estiloHabla": "Pausado, argumenta con ejemplos.",
       "aspecto": "Mujer de unos 35 años, pelo largo negro, saco verde.",
       "avatarId": null,
+      "avatarLook": null,
       "vozId": null
     },
     {
@@ -89,6 +97,7 @@
       "estiloHabla": "Simple, preguntas constantes.",
       "aspecto": "Niña animada estilo cartoon 2D, mochila naranja, lupa.",
       "avatarId": null,
+      "avatarLook": null,
       "vozId": null
     },
     {
@@ -99,6 +108,7 @@
       "estiloHabla": "Hace sonidos de robot, explica con analogías.",
       "aspecto": "Robot redondo turquesa con una antena que se ilumina.",
       "avatarId": null,
+      "avatarLook": null,
       "vozId": null
     },
     {
@@ -109,6 +119,7 @@
       "estiloHabla": "Teatral, pausas dramáticas.",
       "aspecto": "Hombre de unos 50 años, traje violeta, moño.",
       "avatarId": null,
+      "avatarLook": null,
       "vozId": null
     }
   ]

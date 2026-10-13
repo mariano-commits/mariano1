@@ -35,6 +35,8 @@ export interface Personaje {
   estiloHabla: string;
   aspecto: string;
   avatarId: string | null;
+  /** Nombre del look/versión dentro del avatar de HeyGen (ej. "corporate 2"). */
+  avatarLook?: string | null;
   vozId: string | null;
 }
 

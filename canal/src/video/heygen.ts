@@ -86,3 +86,38 @@ export async function descargar(url: string, destino: string): Promise<void> {
   if (!res.ok) throw new Error(`Descarga fallida (HTTP ${res.status})`);
   fs.writeFileSync(destino, Buffer.from(await res.arrayBuffer()));
 }
+
+const resueltos = new Map<string, Promise<string>>();
+
+/**
+ * Si el personaje tiene un look ("corporate 2"), busca dentro del grupo de avatares
+ * el avatar_id de ese look. Si el ID ya es el del look o la consulta falla, usa el ID tal cual.
+ * ⚠️ Endpoint de grupos (/v2/avatar_group/{id}/avatars) sin verificar contra una cuenta real.
+ */
+export function resolverAvatar(avatarId: string, look?: string | null): Promise<string> {
+  if (!look) return Promise.resolve(avatarId);
+  const clave = `${avatarId}|${look}`;
+  if (!resueltos.has(clave)) resueltos.set(clave, buscarLook(avatarId, look));
+  return resueltos.get(clave)!;
+}
+
+async function buscarLook(grupoId: string, look: string): Promise<string> {
+  const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, "");
+  try {
+    const json = await llamar(`/v2/avatar_group/${encodeURIComponent(grupoId)}/avatars`);
+    const lista: any[] = json?.data?.avatar_list ?? json?.data?.avatars ?? [];
+    const candidatos = lista.filter((a) => norm(String(a.avatar_name ?? a.name ?? "")).includes(norm(look)));
+    if (candidatos.length === 1) {
+      const id = candidatos[0].avatar_id ?? candidatos[0].id;
+      console.log(`   🎭 ${grupoId} · "${look}" → ${id}`);
+      return id;
+    }
+    console.warn(
+      `   ⚠️  Look "${look}" ${candidatos.length === 0 ? "no encontrado" : "ambiguo"} en ${grupoId}` +
+        ` (disponibles: ${lista.map((a) => a.avatar_name ?? a.name).join(", ") || "ninguno"}); uso el ID tal cual`,
+    );
+  } catch (err) {
+    console.warn(`   ⚠️  No se pudo resolver el look "${look}" (${err instanceof Error ? err.message : err}); uso el ID tal cual`);
+  }
+  return grupoId;
+}

@@ -5,7 +5,7 @@ import { parseMedia } from "@remotion/media-parser";
 import { nodeReader } from "@remotion/media-parser/node";
 import type { EscenaVideo, NoticieroProps } from "../../../src/canal/tipos";
 import type { Guion, Historia, Personaje, Programa } from "../esquemas";
-import { crearClip, descargar, esperarClip } from "./heygen";
+import { crearClip, descargar, esperarClip, resolverAvatar } from "./heygen";
 
 /** Velocidad de lectura para estimar la duración de escenas borrador. */
 const PALABRAS_POR_SEG = 2.6;
@@ -43,12 +43,13 @@ export async function prepararNoticiero(
 
     if (op.usarHeygen && p?.avatarId && p.vozId) {
       // Nombre por hash del contenido: re-correr no vuelve a pagar clips ya generados.
-      const hash = createHash("sha1").update(`${p.avatarId}|${p.vozId}|${e.texto}`).digest("hex").slice(0, 10);
+      const avatarId = await resolverAvatar(p.avatarId, p.avatarLook);
+      const hash = createHash("sha1").update(`${avatarId}|${p.vozId}|${e.texto}`).digest("hex").slice(0, 10);
       const relativo = `${op.carpetaPublica}/escena-${String(i + 1).padStart(2, "0")}-${hash}.mp4`;
       const absoluto = path.join("public", relativo);
       if (!fs.existsSync(absoluto)) {
         console.log(`   🎬 HeyGen escena ${i + 1} (${base.personaje.nombre})…`);
-        const id = await crearClip({ avatarId: p.avatarId, vozId: p.vozId, texto: e.texto, colorFondo: COLOR_FONDO });
+        const id = await crearClip({ avatarId, vozId: p.vozId, texto: e.texto, colorFondo: COLOR_FONDO });
         await descargar(await esperarClip(id), absoluto);
       } else {
         console.log(`   ♻️  escena ${i + 1}: clip en caché`);
@@ -56,7 +57,10 @@ export async function prepararNoticiero(
       return { ...base, videoSrc: relativo, duracionSeg: await duracionDe(absoluto) };
     }
 
-    if (op.usarHeygen) console.log(`   📝 escena ${i + 1}: ${base.personaje.nombre} no tiene avatarId/vozId → borrador`);
+    if (op.usarHeygen) {
+      const falta = [!p?.avatarId && "avatarId", !p?.vozId && "vozId"].filter(Boolean).join(" y ");
+      console.log(`   📝 escena ${i + 1}: ${base.personaje.nombre} sin ${falta} → borrador`);
+    }
     const palabras = e.texto.split(/\s+/).filter(Boolean).length;
     return { ...base, videoSrc: null, duracionSeg: Math.max(3, Math.ceil(palabras / PALABRAS_POR_SEG)) };
   });
