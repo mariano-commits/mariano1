@@ -1,0 +1,264 @@
+<title>Plan LinkedIn Energy AI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: single reading column (max 1080px); header with key numbers, then 4 weeks as post-card grids, then shared rules and checklists. Control-room feel: graphite + Inisoft crimson. */
+:root{
+  --bg:#f6f6f7; --surface:#ffffff; --fg:#17181c; --muted:#5d606b; --line:#dfe0e4;
+  --accent:#d0103a; --accent-soft:#fbe7ec; --warn:#a15c00; --warn-soft:#fdf1df; --ok:#1f7a4d;
+  --display:"Barlow Condensed","Arial Narrow",Arial,sans-serif;
+  --body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#111215; --surface:#1a1c20; --fg:#ebecef; --muted:#9a9ea8; --line:#2c2f35;
+  --accent:#ff4569; --accent-soft:#3a1720; --warn:#f0b04a; --warn-soft:#33260f; --ok:#4fc98a; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#111215; --surface:#1a1c20; --fg:#ebecef; --muted:#9a9ea8; --line:#2c2f35;
+  --accent:#ff4569; --accent-soft:#3a1720; --warn:#f0b04a; --warn-soft:#33260f; --ok:#4fc98a; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font:15px/1.55 var(--body);padding-inline:16px;padding-block:32px 64px}
+.wrap{max-width:1080px;margin-inline:auto;display:flex;flex-direction:column;gap:48px}
+h1,h2,h3{font-family:var(--display);font-weight:700;letter-spacing:.01em;text-wrap:balance;margin:0;line-height:1.05}
+h1{font-size:clamp(2.2rem,6vw,3.6rem)}
+h2{font-size:1.9rem}
+h3{font-size:1.25rem;font-weight:600}
+p{margin:0;max-width:68ch}
+.eyebrow{font:500 .75rem/1 var(--mono);text-transform:uppercase;letter-spacing:.12em;color:var(--accent)}
+.muted{color:var(--muted)}
+header{display:flex;flex-direction:column;gap:16px;border-bottom:2px solid var(--fg);padding-bottom:28px}
+.meta{display:flex;flex-wrap:wrap;gap:8px 24px;font:400 .85rem var(--mono);color:var(--muted)}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-top:8px}
+.kpi{background:var(--surface);border:1px solid var(--line);padding:14px 16px;display:flex;flex-direction:column;gap:4px}
+.kpi b{font:600 1.9rem/1 var(--display);font-variant-numeric:tabular-nums}
+.kpi span{font-size:.82rem;color:var(--muted)}
+.kpi.alert b{color:var(--accent)}
+section{display:flex;flex-direction:column;gap:18px}
+.why{display:grid;gap:0;border:1px solid var(--line);background:var(--surface)}
+.why div{display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:12px 16px;border-top:1px solid var(--line)}
+.why div:first-child{border-top:0}
+.why div>*{min-width:0}
+.why .h{font:500 .72rem var(--mono);text-transform:uppercase;letter-spacing:.1em;color:var(--muted)}
+@media (max-width:620px){.why div{grid-template-columns:1fr;gap:4px}}
+.pillars{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.pillar{background:var(--surface);border:1px solid var(--line);padding:14px 16px;display:flex;flex-direction:column;gap:6px}
+.pillar .bar{height:6px;background:var(--line)}
+.pillar .bar i{display:block;height:100%;background:var(--accent)}
+.pillar strong{font:600 1.15rem var(--display)}
+.pillar .pct{font:500 .85rem var(--mono);color:var(--muted)}
+.callout{background:var(--warn-soft);border-left:4px solid var(--warn);padding:14px 18px;display:flex;flex-direction:column;gap:6px}
+.callout strong{color:var(--warn)}
+.week-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 16px;border-bottom:1px solid var(--line);padding-bottom:10px}
+.week-head .dates{font:500 .85rem var(--mono);color:var(--muted)}
+.posts{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px}
+.post{background:var(--surface);border:1px solid var(--line);padding:14px 16px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.post.personal{border-style:dashed}
+.post .top{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.post .day{font:600 1.1rem var(--display)}
+.chip{font:500 .7rem/1 var(--mono);text-transform:uppercase;letter-spacing:.08em;padding:4px 7px;border:1px solid var(--line);color:var(--muted);white-space:nowrap}
+.chip.page{border-color:var(--accent);color:var(--accent)}
+.post .angle{font-size:.92rem}
+.post dl{display:grid;grid-template-columns:auto 1fr;gap:3px 10px;margin:0;font-size:.8rem;border-top:1px solid var(--line);padding-top:10px}
+.post dt{font-family:var(--mono);color:var(--muted);text-transform:uppercase;font-size:.68rem;letter-spacing:.08em;padding-top:2px}
+.post dd{margin:0;min-width:0}
+.goal{font-weight:600;color:var(--accent)}
+.rules{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px 28px;padding:0;margin:0;list-style:none}
+.rules li{padding-left:16px;position:relative}
+.rules li::before{content:"";position:absolute;left:0;top:.62em;width:7px;height:7px;background:var(--accent)}
+.table-scroll{overflow-x:auto;border:1px solid var(--line);background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:.88rem}
+th,td{text-align:left;padding:10px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font:500 .7rem var(--mono);text-transform:uppercase;letter-spacing:.1em;color:var(--muted)}
+tr:last-child td{border-bottom:0}
+td.c{text-align:center;font-family:var(--mono)}
+.y{color:var(--ok);font-weight:600}
+.todo{counter-reset:t;display:flex;flex-direction:column;gap:10px;padding:0;margin:0;list-style:none}
+.todo li{counter-increment:t;display:grid;grid-template-columns:2rem 1fr;gap:8px;align-items:baseline}
+.todo li::before{content:counter(t);font:600 1.3rem var(--display);color:var(--accent)}
+footer{font:400 .8rem var(--mono);color:var(--muted);border-top:1px solid var(--line);padding-top:16px}
+</style>
+
+<div class="wrap">
+  <header>
+    <span class="eyebrow">Inisoft Global · LinkedIn · Energy AI</span>
+    <h1>Plan de publicaciones, 20 oct – 12 nov 2026</h1>
+    <p class="muted">Cuatro semanas para volver a publicar con ritmo, con foco en IA aplicada a Oil &amp; Gas y minería. El contenido sale de las landings de Energy AI, Flowback Intelligence Platform y OSDU; las cifras de rendimiento, de LinkedIn vía Windsor.</p>
+    <div class="meta"><span>Página: Inisoft Global</span><span>+ perfil de Mariano Sciutto</span><span>3 posts/semana en la página + 1 personal</span></div>
+    <div class="kpis">
+      <div class="kpi"><b>3.036</b><span>seguidores de la página</span></div>
+      <div class="kpi alert"><b>28 abr</b><span>último post de la página (5,5 meses sin publicar)</span></div>
+      <div class="kpi alert"><b>89</b><span>impresiones en octubre (pico 2026: 2.166 en enero)</span></div>
+      <div class="kpi"><b>17–32%</b><span>engagement de los posts de casos y eventos de Oil &amp; Gas</span></div>
+      <div class="kpi"><b>2–4%</b><span>engagement de los posts genéricos de "IA para tu negocio"</span></div>
+    </div>
+  </header>
+
+  <section>
+    <span class="eyebrow">Diagnóstico</span>
+    <h2>Por qué este plan</h2>
+    <div class="why">
+      <div><span class="h">Lo que muestran los datos</span><span class="h">Decisión</span></div>
+      <div><span>Sin publicaciones desde el 28 de abril; las impresiones cayeron de ~2.000 por mes a 89 en octubre.</span><span>Ritmo fijo: martes, miércoles y jueves en la página, más un post de Mariano por semana.</span></div>
+      <div><span>Los mejores posts son casos y eventos de IA en Oil &amp; Gas, en español.</span><span>Todo el mes en Energy AI y en español.</span></div>
+      <div><span>Los posts genéricos con muchos hashtags casi no generan interacción.</span><span>Cada post lleva un dato, un pozo, una cuenca o un nombre.</span></div>
+      <div><span>Casi cero comentarios en 26 posts.</span><span>Una pregunta técnica real por semana y respuesta del equipo en la primera hora.</span></div>
+      <div><span>La interacción viene de clics en documentos y carruseles.</span><span>Un carrusel PDF por semana.</span></div>
+    </div>
+  </section>
+
+  <section>
+    <span class="eyebrow">Mezcla de contenido</span>
+    <h2>Pilares</h2>
+    <div class="pillars">
+      <div class="pillar"><strong>Autoridad</strong><span class="pct">40% · casos y datos</span><div class="bar"><i style="width:40%"></i></div><span class="muted">Flowback en Vaca Muerta, bombas PCP, OSDU, SCADA y PI.</span></div>
+      <div class="pillar"><strong>Detrás de escena</strong><span class="pct">30% · cómo pensamos</span><div class="bar"><i style="width:30%"></i></div><span class="muted">Decisiones técnicas, errores y aprendizajes de campo.</span></div>
+      <div class="pillar"><strong>Comunidad</strong><span class="pct">20% · gente y partners</span><div class="bar"><i style="width:20%"></i></div><span class="muted">Equipo, Aleph Energy, AWS, clientes y eventos.</span></div>
+      <div class="pillar"><strong>Oferta</strong><span class="pct">10% · máx. 1 por semana</span><div class="bar"><i style="width:10%"></i></div><span class="muted">Demo o diagnóstico, siempre con el link en el primer comentario.</span></div>
+    </div>
+  </section>
+
+  <div class="callout">
+    <strong>Definir antes de la semana 1: la cifra oficial de flowback</strong>
+    <p>La landing del Flowback Intelligence Platform dice "&gt;3 h" de alerta anticipada y "~0" falsos positivos. La tarjeta del caso en /cases dice "12 horas" y "cero falsos positivos". Este plan usa las cifras de la landing. Conviene unificar también el sitio.</p>
+  </div>
+
+  <section>
+    <div class="week-head"><span class="eyebrow">Semana 1</span><h2>Flowback Intelligence Platform</h2><span class="dates">20 – 22 oct</span></div>
+    <div class="posts">
+      <article class="post"><div class="top"><span class="day">Mar 20</span><span class="chip page">Página</span></div>
+        <p class="angle">"100+ eventos de falla detectados en pads de Vaca Muerta. 100% de detección en incidentes confirmados." Problema, física del orificio, alerta con más de 3 h, resultado.</p>
+        <dl><dt>Pilar</dt><dd>Autoridad</dd><dt>Formato</dt><dd>Carrusel PDF, 6 slides</dd><dt>Gancho</dt><dd>F7 Cifra precisa</dd><dt>Cierre</dt><dd>Pregunta</dd><dt>Objetivo</dt><dd class="goal">Guardados</dd></dl></article>
+      <article class="post"><div class="top"><span class="day">Mié 21</span><span class="chip page">Página</span></div>
+        <p class="angle">"No usamos machine learning para predecir flowback, y fue a propósito." Hay muy pocos incidentes para entrenar un modelo estadístico; por eso modelos basados en física, y después un dataset etiquetado que es del cliente.</p>
+        <dl><dt>Pilar</dt><dd>Detrás de escena</dd><dt>Formato</dt><dd>Texto</dd><dt>Gancho</dt><dd>F10 Contrario con pruebas</dd><dt>Cierre</dt><dd>"¿Cómo resuelven ustedes los eventos raros?"</dd><dt>Objetivo</dt><dd class="goal">Comentarios</dd></dl></article>
+      <article class="post"><div class="top"><span class="day">Jue 22</span><span class="chip page">Página</span></div>
+        <p class="angle">"Cada falla no detectada es un paro de pad. Cada paro obliga a re-estabilizar todos los pozos." Un solo paro evitado paga la plataforma. Imagen: alerta de ejemplo PAD VM-07.</p>
+        <dl><dt>Pilar</dt><dd>Oferta</dd><dt>Formato</dt><dd>Imagen</dd><dt>Gancho</dt><dd>F1 Anáfora</dd><dt>Cierre</dt><dd>Link a la landing en el 1er comentario</dd><dt>Objetivo</dt><dd class="goal">Clics</dd></dl></article>
+      <article class="post personal"><div class="top"><span class="day">Jue 22</span><span class="chip">Mariano</span></div>
+        <p class="angle">La primera vez que el sistema avisó antes que el operador. Necesita la historia real: fecha, pozo y qué se evitó.</p>
+        <dl><dt>Pilar</dt><dd>Detrás de escena</dd><dt>Formato</dt><dd>Texto</dd><dt>Gancho</dt><dd>F11 Arranque emotivo</dd><dt>Cierre</dt><dd>Suave</dd><dt>Objetivo</dt><dd class="goal">Likes</dd></dl></article>
+    </div>
+  </section>
+
+  <section>
+    <div class="week-head"><span class="eyebrow">Semana 2</span><h2>Energy AI en operación</h2><span class="dates">27 – 29 oct</span></div>
+    <div class="posts">
+      <article class="post"><div class="top"><span class="day">Mar 27</span><span class="chip page">Página</span></div>
+        <p class="angle">"Cómo una bomba PCP avisa que va a fallar": torque, temperatura y vibración, probabilidad de falla a 30 días y acción recomendada.</p>
+        <dl><dt>Pilar</dt><dd>Autoridad</dd><dt>Formato</dt><dd>Carrusel PDF</dd><dt>Gancho</dt><dd>F15 Explicado simple</dd><dt>Cierre</dt><dd>Pregunta</dd><dt>Objetivo</dt><dd class="goal">Guardados</dd></dl></article>
+      <article class="post"><div class="top"><span class="day">Mié 28</span><span class="chip page">Página</span></div>
+        <p class="angle">"¿Qué frena más la IA en tu operación?" Opciones: SCADA o PI sin integrar · Datos sin contexto · Falta de equipo · Confianza del operador.</p>
+        <dl><dt>Pilar</dt><dd>Comunidad</dd><dt>Formato</dt><dd>Encuesta</dd><dt>Gancho</dt><dd>Encuesta</dd><dt>Cierre</dt><dd>Votar y comentar</dd><dt>Objetivo</dt><dd class="goal">Comentarios</dd></dl></article>
+      <article class="post"><div class="top"><span class="day">Jue 29</span><span class="chip page">Página</span></div>
+        <p class="angle">"No hace falta reemplazar el SCADA para tener IA." Integración con SCADA, DCS y OSIsoft PI sobre la infraestructura que ya existe.</p>
+        <dl><dt>Pilar</dt><dd>Autoridad</dd><dt>Formato</dt><dd>Texto</dd><dt>Gancho</dt><dd>F18 Falso dilema</dd><dt>Cierre</dt><dd>Pregunta</dd><dt>Objetivo</dt><dd class="goal">Reposts</dd></dl></article>
+      <article class="post personal"><div class="top"><span class="day">Jue 29</span><span class="chip">Mariano</span></div>
+        <p class="angle">"Pensábamos que el problema de Oil &amp; Gas era la falta de datos. Estábamos equivocados." El problema real: el ojo humano detecta tarde.</p>
+        <dl><dt>Pilar</dt><dd>Detrás de escena</dd><dt>Formato</dt><dd>Texto</dd><dt>Gancho</dt><dd>F4 Confesión con fecha</dd><dt>Cierre</dt><dd>Pregunta espejo</dd><dt>Objetivo</dt><dd class="goal">Comentarios</dd></dl></article>
+    </div>
+  </section>
+
+  <section>
+    <div class="week-head"><span class="eyebrow">Semana 3</span><h2>OSDU y datos de subsuelo</h2><span class="dates">3 – 5 nov</span></div>
+    <div class="posts">
+      <article class="post"><div class="top"><span class="day">Mar 3</span><span class="chip page">Página</span></div>
+        <p class="angle">"Décadas de SEG-Y en un NAS": metadatos inconsistentes, campañas que no aparecen, catalogación manual, baja reutilización. Luego la ruta con OSDU.</p>
+        <dl><dt>Pilar</dt><dd>Autoridad</dd><dt>Formato</dt><dd>Carrusel PDF</dd><dt>Gancho</dt><dd>F19 Anécdota + evidencia</dd><dt>Cierre</dt><dd>Pregunta</dd><dt>Objetivo</dt><dd class="goal">Guardados</dd></dl></article>
+      <article class="post"><div class="top"><span class="day">Mié 4</span><span class="chip page">Página</span></div>
+        <p class="angle">"La campaña sísmica que nadie encontraba no estaba perdida. Estaba en la cabeza de una persona." Catálogo centralizado y metadatos recuperados.</p>
+        <dl><dt>Pilar</dt><dd>Detrás de escena</dd><dt>Formato</dt><dd>Texto</dd><dt>Gancho</dt><dd>F9 Intriga</dd><dt>Cierre</dt><dd>"¿Les pasó?"</dd><dt>Objetivo</dt><dd class="goal">Comentarios</dd></dl></article>
+      <article class="post"><div class="top"><span class="day">Jue 5</span><span class="chip page">Página</span></div>
+        <p class="angle">El equipo de datos de energía (nombres y roles, con su OK) y los partners AWS y Aleph Energy.</p>
+        <dl><dt>Pilar</dt><dd>Comunidad</dd><dt>Formato</dt><dd>Foto del equipo</dd><dt>Gancho</dt><dd>F14 Agradecimiento con nombres</dd><dt>Cierre</dt><dd>Etiquetas</dd><dt>Objetivo</dt><dd class="goal">Reposts</dd></dl></article>
+      <article class="post personal"><div class="top"><span class="day">Jue 5</span><span class="chip">Mariano</span></div>
+        <p class="angle">"Tu iniciativa de GenAI no falla por el modelo. Falla porque tus datos sísmicos no están listos."</p>
+        <dl><dt>Pilar</dt><dd>Autoridad</dd><dt>Formato</dt><dd>Texto</dd><dt>Gancho</dt><dd>F10 Contrario</dd><dt>Cierre</dt><dd>Pregunta</dd><dt>Objetivo</dt><dd class="goal">Comentarios</dd></dl></article>
+    </div>
+  </section>
+
+  <section>
+    <div class="week-head"><span class="eyebrow">Semana 4</span><h2>Datos listos para IA y minería</h2><span class="dates">10 – 12 nov</span></div>
+    <div class="posts">
+      <article class="post"><div class="top"><span class="day">Mar 10</span><span class="chip page">Página</span></div>
+        <p class="angle">Dos operadoras con los mismos sensores: una con SCADA, historiador y pozos integrados, otra con integraciones punto a punto. A 12 meses, una escala casos de IA y la otra no.</p>
+        <dl><dt>Pilar</dt><dd>Autoridad</dd><dt>Formato</dt><dd>Carrusel PDF</dd><dt>Gancho</dt><dd>F20 Curvas que divergen</dd><dt>Cierre</dt><dd>Pregunta</dd><dt>Objetivo</dt><dd class="goal">Guardados</dd></dl></article>
+      <article class="post"><div class="top"><span class="day">Mié 11</span><span class="chip page">Página</span></div>
+        <p class="angle">Minería: asistente con RAG que analiza documentación geológica, mapas geofísicos y geoquímica para clasificar el potencial de pórfidos de cobre en Argentina.</p>
+        <dl><dt>Pilar</dt><dd>Autoridad</dd><dt>Formato</dt><dd>Texto + imagen</dd><dt>Gancho</dt><dd>F5 Meta que se demuestra</dd><dt>Cierre</dt><dd>Pregunta</dd><dt>Objetivo</dt><dd class="goal">Comentarios</dd></dl></article>
+      <article class="post"><div class="top"><span class="day">Jue 12</span><span class="chip page">Página</span></div>
+        <p class="angle">"No te vamos a vender una plataforma de IA." Se empieza por el caso de uso de mayor impacto, medible desde el primer día. Invitación a diagnóstico o demo.</p>
+        <dl><dt>Pilar</dt><dd>Oferta</dd><dt>Formato</dt><dd>Texto</dd><dt>Gancho</dt><dd>F13 Giro inesperado</dd><dt>Cierre</dt><dd>Link en el 1er comentario</dd><dt>Objetivo</dt><dd class="goal">Clics</dd></dl></article>
+      <article class="post personal"><div class="top"><span class="day">Jue 12</span><span class="chip">Mariano</span></div>
+        <p class="angle">Lo que aprendimos en cuatro semanas mostrando el trabajo en público, con las métricas reales del mes.</p>
+        <dl><dt>Pilar</dt><dd>Comunidad</dd><dt>Formato</dt><dd>Texto</dd><dt>Gancho</dt><dd>F16 Humildad</dd><dt>Cierre</dt><dd>Suave</dd><dt>Objetivo</dt><dd class="goal">Likes</dd></dl></article>
+    </div>
+  </section>
+
+  <section>
+    <span class="eyebrow">Para todo el mes</span>
+    <h2>Reglas de publicación</h2>
+    <ul class="rules">
+      <li>Martes, miércoles y jueves a las 8:30 (hora Argentina). Nada viernes por la tarde ni fines de semana.</li>
+      <li>Los links van en el primer comentario, nunca en el cuerpo. Máximo 3 hashtags.</li>
+      <li>Nada de "comentá X y te lo mando": LinkedIn lo penaliza desde marzo de 2026.</li>
+      <li>Mariano y 3 personas del equipo comentan cada post de la página en la primera hora, con algo que aporte.</li>
+      <li>Usar solo cifras publicadas en las landings.</li>
+      <li>Un carrusel PDF por semana, de 6 a 8 slides, con la marca Inisoft.</li>
+    </ul>
+  </section>
+
+  <section>
+    <span class="eyebrow">Distribución</span>
+    <h2>Comentarios diarios del equipo</h2>
+    <p>Entre 10 y 15 comentarios con contenido por día, desde los perfiles personales: 70% pares, 20% referentes, 10% potenciales clientes.</p>
+    <div class="table-scroll"><table>
+      <thead><tr><th>Segmento</th><th>A quién</th><th>Cómo</th></tr></thead>
+      <tbody>
+        <tr><td>Pares</td><td>Consultoras de datos e IA de LATAM, partners de AWS y Snowflake</td><td>Sumar un dato propio</td></tr>
+        <tr><td>Referentes</td><td>Voceros de AWS Energy, IAPG, Cámara Argentina-Texas, OSDU Forum</td><td>Comentar temprano y con contenido</td></tr>
+        <tr><td>Potenciales clientes</td><td>Gerentes de producción, completación, exploración y datos en operadoras de Vaca Muerta y mineras de cobre</td><td>Responder la pregunta que plantean, sin vender</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section>
+    <span class="eyebrow">Control semanal</span>
+    <h2>Chequeo de cada semana</h2>
+    <div class="table-scroll"><table>
+      <thead><tr><th>Chequeo</th><th>S1</th><th>S2</th><th>S3</th><th>S4</th></tr></thead>
+      <tbody>
+        <tr><td>Al menos un post con datos</td><td class="c y">Sí</td><td class="c y">Sí</td><td class="c y">Sí</td><td class="c y">Sí</td></tr>
+        <tr><td>Al menos un post de detrás de escena</td><td class="c y">Sí</td><td class="c y">Sí</td><td class="c y">Sí</td><td class="c">Mariano</td></tr>
+        <tr><td>Oferta suave</td><td class="c y">Sí</td><td class="c">Encuesta</td><td class="c">No</td><td class="c y">Sí</td></tr>
+        <tr><td>Ningún pilar por encima del 60%</td><td class="c y">Sí</td><td class="c y">Sí</td><td class="c y">Sí</td><td class="c y">50%</td></tr>
+        <tr><td>Ningún gancho repetido en la semana</td><td class="c y">Sí</td><td class="c y">Sí</td><td class="c y">Sí</td><td class="c y">Sí</td></tr>
+        <tr><td>Objetivos variados</td><td class="c y">Sí</td><td class="c y">Sí</td><td class="c y">Sí</td><td class="c y">Sí</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section>
+    <span class="eyebrow">Pendientes</span>
+    <h2>Qué falta para redactar</h2>
+    <ol class="todo">
+      <li><span><strong>Cifra oficial de flowback:</strong> más de 3 h o 12 h; "~0" o "cero" falsos positivos.</span></li>
+      <li><span><strong>Dos o tres historias reales</strong> para los posts de Mariano de las semanas 1 y 2: fecha, pozo o cliente (anonimizado si hace falta) y qué pasó.</span></li>
+      <li><span><strong>Autorización</strong> de las personas y clientes que se nombran en la semana 3.</span></li>
+      <li><span><strong>Diseño de los 4 carruseles</strong> con la marca Inisoft.</span></li>
+    </ol>
+  </section>
+
+  <section>
+    <span class="eyebrow">Medición</span>
+    <h2>Metas del mes</h2>
+    <div class="kpis">
+      <div class="kpi"><b>&gt;2.000</b><span>impresiones por mes</span></div>
+      <div class="kpi"><b>&gt;10%</b><span>engagement promedio</span></div>
+      <div class="kpi"><b>≥5</b><span>comentarios en al menos 3 posts</span></div>
+    </div>
+    <p class="muted">Se mide al cierre de cada semana en Windsor: impresiones, engagement, clics y comentarios por post, y seguidores nuevos.</p>
+  </section>
+
+  <footer>Fuentes: inisoftglobal.com (Energy AI, Flowback Intelligence Platform, OSDU) · LinkedIn Inisoft Global vía Windsor.ai, ene-2025 a oct-2026 · Plan armado con linkedin-content-planner.</footer>
+</div>
