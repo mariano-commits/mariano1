@@ -1,0 +1,409 @@
+<title>Calendario LinkedIn Energy AI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: header, then a 4-week calendar grid (Mon–Fri columns), then every draft in date order with copy buttons. Same graphite + Inisoft crimson system as the plan page. */
+:root{
+  --bg:#f6f6f7; --surface:#ffffff; --fg:#17181c; --muted:#5d606b; --line:#dfe0e4;
+  --accent:#d0103a; --accent-soft:#fbe7ec; --warn:#a15c00; --warn-soft:#fdf1df; --ok:#1f7a4d; --sunk:#eeeef1;
+  --display:"Barlow Condensed","Arial Narrow",Arial,sans-serif;
+  --body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#111215; --surface:#1a1c20; --fg:#ebecef; --muted:#9a9ea8; --line:#2c2f35;
+  --accent:#ff4569; --accent-soft:#3a1720; --warn:#f0b04a; --warn-soft:#33260f; --ok:#4fc98a; --sunk:#16171a; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#111215; --surface:#1a1c20; --fg:#ebecef; --muted:#9a9ea8; --line:#2c2f35;
+  --accent:#ff4569; --accent-soft:#3a1720; --warn:#f0b04a; --warn-soft:#33260f; --ok:#4fc98a; --sunk:#16171a; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font:15px/1.55 var(--body);padding-inline:16px;padding-block:32px 64px}
+.wrap{max-width:1080px;margin-inline:auto;display:flex;flex-direction:column;gap:44px}
+h1,h2,h3{font-family:var(--display);font-weight:700;letter-spacing:.01em;text-wrap:balance;margin:0;line-height:1.05}
+h1{font-size:clamp(2.2rem,6vw,3.4rem)}
+h2{font-size:1.8rem}
+h3{font-size:1.35rem;font-weight:600}
+p{margin:0}
+.eyebrow{font:500 .75rem/1 var(--mono);text-transform:uppercase;letter-spacing:.12em;color:var(--accent)}
+.muted{color:var(--muted)}
+header{display:flex;flex-direction:column;gap:14px;border-bottom:2px solid var(--fg);padding-bottom:24px}
+.legend{display:flex;flex-wrap:wrap;gap:8px 18px;font-size:.85rem;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.sw{width:12px;height:12px;display:inline-block;border:1px solid var(--line)}
+.sw.page{background:var(--accent)}
+.sw.pers{background:transparent;border:1px dashed var(--muted)}
+.callout{background:var(--warn-soft);border-left:4px solid var(--warn);padding:14px 18px;display:flex;flex-direction:column;gap:6px}
+.callout strong{color:var(--warn)}
+.callout ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:4px}
+/* calendar */
+.cal-scroll{overflow-x:auto}
+.cal{display:grid;grid-template-columns:repeat(5,minmax(150px,1fr));gap:6px;min-width:780px}
+.cal .dow{font:500 .7rem var(--mono);text-transform:uppercase;letter-spacing:.1em;color:var(--muted);padding:0 4px 4px}
+.cell{background:var(--surface);border:1px solid var(--line);min-height:96px;padding:8px;display:flex;flex-direction:column;gap:6px}
+.cell.off{background:var(--sunk)}
+.cell .d{font:600 .95rem var(--display);color:var(--muted)}
+.cell .d b{color:var(--fg)}
+.wk{grid-column:1/-1;font:600 1rem var(--display);padding:10px 4px 2px;display:flex;gap:10px;align-items:baseline}
+.wk span{font:400 .8rem var(--body);color:var(--muted)}
+.ev{display:block;text-decoration:none;color:var(--fg);font-size:.8rem;line-height:1.3;padding:6px 7px;border-left:3px solid var(--accent);background:var(--accent-soft)}
+.ev:hover,.ev:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.ev.pers{border-left:3px dashed var(--muted);background:transparent;border-top:1px dashed var(--line);border-right:1px dashed var(--line);border-bottom:1px dashed var(--line)}
+.ev small{display:block;font:500 .66rem var(--mono);text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:2px}
+/* drafts */
+.drafts{display:flex;flex-direction:column;gap:22px}
+.draft{background:var(--surface);border:1px solid var(--line);display:grid;grid-template-columns:240px 1fr;min-width:0;scroll-margin-top:16px}
+.draft:target{outline:2px solid var(--accent)}
+.draft aside{border-right:1px solid var(--line);padding:16px;display:flex;flex-direction:column;gap:10px;background:var(--sunk)}
+.draft aside .when{font:600 1.35rem/1 var(--display)}
+.draft aside dl{display:grid;grid-template-columns:auto 1fr;gap:4px 10px;margin:0;font-size:.8rem}
+.draft aside dt{font:500 .66rem var(--mono);text-transform:uppercase;letter-spacing:.08em;color:var(--muted);padding-top:2px}
+.draft aside dd{margin:0;min-width:0}
+.draft .main{padding:16px 20px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.draft .main h3{display:flex;justify-content:space-between;gap:12px;align-items:baseline;flex-wrap:wrap}
+.count{font:400 .78rem var(--mono);color:var(--muted)}
+.text{white-space:pre-wrap;font-size:.95rem;line-height:1.6;max-width:66ch;overflow-wrap:anywhere}
+.block{border-top:1px solid var(--line);padding-top:12px;display:flex;flex-direction:column;gap:6px}
+.block .lbl{font:500 .7rem var(--mono);text-transform:uppercase;letter-spacing:.1em;color:var(--muted)}
+.block ol,.block ul{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px;font-size:.88rem}
+.block p{font-size:.88rem;white-space:pre-wrap;overflow-wrap:anywhere}
+.flag{background:var(--warn-soft);color:var(--fg);padding:8px 10px;font-size:.84rem;border-left:3px solid var(--warn)}
+.actions{display:flex;gap:8px;flex-wrap:wrap}
+button{font:500 .8rem var(--body);background:var(--fg);color:var(--bg);border:0;padding:8px 12px;cursor:pointer}
+button.ghost{background:transparent;color:var(--fg);border:1px solid var(--line)}
+button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.status{font-size:.78rem;color:var(--ok);align-self:center;min-height:1em}
+@media (max-width:720px){.draft{grid-template-columns:1fr}.draft aside{border-right:0;border-bottom:1px solid var(--line)}}
+footer{font:400 .8rem var(--mono);color:var(--muted);border-top:1px solid var(--line);padding-top:16px}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+</style>
+
+<div class="wrap">
+  <header>
+    <span class="eyebrow">Inisoft Global · LinkedIn · Energy AI</span>
+    <h1>Calendario y borradores, 20 oct – 12 nov 2026</h1>
+    <p class="muted">12 publicaciones para la página, listas para revisar y copiar. Martes, miércoles y jueves a las 8:30 (hora Argentina). Los 4 posts de Mariano figuran en el calendario y esperan sus historias reales.</p>
+    <div class="legend"><span><i class="sw page"></i>Página Inisoft Global (borrador listo)</span><span><i class="sw pers"></i>Perfil de Mariano (pendiente)</span></div>
+  </header>
+
+  <div class="callout">
+    <strong>Revisar antes de publicar</strong>
+    <ul>
+      <li>Flowback: estos textos usan "más de 3 horas" y "~0 falsos positivos" (landing). La tarjeta en /cases dice 12 horas. Unificar.</li>
+      <li>Jue 5 nov: completar nombres y roles del equipo y confirmar que aceptan ser etiquetados.</li>
+      <li>Jue 12 nov: confirmar que ofrecemos una conversación de diagnóstico sin costo.</li>
+      <li>El sitio llama a las PCP "bombas electrosumergibles". Las PCP son bombas de cavidades progresivas; conviene corregirlo en el sitio. Los textos dicen "bombas PCP".</li>
+    </ul>
+  </div>
+
+  <section>
+    <span class="eyebrow">Calendario</span>
+    <h2>Cuatro semanas</h2>
+    <div class="cal-scroll"><div class="cal" id="cal"></div></div>
+  </section>
+
+  <section>
+    <span class="eyebrow">Borradores</span>
+    <h2>Publicaciones de la página</h2>
+    <div class="drafts" id="drafts"></div>
+  </section>
+
+  <footer>Contenido: inisoftglobal.com (Energy AI, Flowback Intelligence Platform, OSDU, casos). Redactado con linkedin-post-writer. Plan completo en la página "Plan LinkedIn Energy AI".</footer>
+</div>
+
+<script>
+const POSTS = [
+{id:"p1",date:"2026-10-20",channel:"page",title:"Flowback: 100+ fallas detectadas",pillar:"Autoridad",format:"Carrusel PDF (6 slides)",hook:"F7 Cifra precisa",goal:"Guardados",
+text:`100+ eventos de falla detectados en producción. 100% de detección en los incidentes confirmados desde el go-live en Vaca Muerta.
+
+Son los números del Flowback Intelligence Platform, operando en pads no convencionales de la Cuenca Neuquina.
+
+El flowback es una de las fases de mayor riesgo en la vida de un pozo. Arena, agua y presión trabajan las 24 horas contra los activos de superficie: erosionan orificios, tapan líneas, aceleran la corrosión.
+
+La mayoría de las operaciones ya tiene SCADA o telemetría en tiempo real. El problema es que el ojo humano, aun mirando las curvas en vivo, detecta estos eventos tarde. Cuando la anomalía se ve, la falla ya empezó.
+
+Por eso el sistema busca las firmas tempranas de erosión y taponamiento cruzando varias señales a la vez. La alerta llega más de 3 horas antes de que la anomalía aparezca en la telemetría estándar.
+
+En el carrusel: qué detecta, cómo lo hace y qué cambia para el equipo de operación.
+
+Todo corre dentro de la nube del cliente. La telemetría, las alertas y el modelo no salen de su infraestructura.
+
+¿Cuánto tiempo pasa hoy en su operación entre que la señal existe y alguien la ve?
+
+#OilAndGas #VacaMuerta`,
+first:`Más detalle sobre la plataforma: https://inisoftglobal.com/energy-ai/flowback-intelligence-platform`,
+visual:{label:"Carrusel",items:["100+ fallas detectadas. 100% de detección en incidentes confirmados. (Vaca Muerta)","El problema: arena, agua y presión contra orificios, líneas y manifold, las 24 horas.","Por qué se detecta tarde: las firmas tempranas están repartidas en varias señales; nadie las ve mirando curvas de a una.","Cómo detectamos: modelos basados en la física del orificio y el manifold, no estadística de caja negra.","Resultados: más de 3 h de anticipación · ~0 falsos positivos · 3 meses de flowback protegido por pad.","Sus datos no salen de su nube. Link a la plataforma en el primer comentario."]}},
+
+{id:"p2",date:"2026-10-21",channel:"page",title:"Por qué no empezamos por machine learning",pillar:"Detrás de escena",format:"Texto",hook:"F10 Contrario con pruebas",goal:"Comentarios",
+text:`Para predecir fallas en flowback, decidimos no empezar por machine learning.
+
+Suena raro viniendo de un equipo que trabaja con IA todos los días. Pero el flowback tiene un problema de base: hay muy pocos incidentes en relación al tiempo total de operación, y con eventos tan raros no se entrena un modelo estadístico confiable.
+
+Lo que sí se puede modelar es la física. Qué pasa dentro del manifold, en el orificio y en las líneas cuando algo empieza a fallar. Ese fue el punto de partida del Flowback Intelligence Platform.
+
+El machine learning llega después, con datos que hoy no existen.
+
+Cada vez que un operador confirma, descarta o anota una alerta, esa interacción queda guardada con estructura. Con el tiempo se arma un dataset etiquetado que es propiedad del cliente, y con él se entrena un modelo ajustado a sus activos.
+
+En una tercera etapa, el modelo físico y el de ML alimentan un agente conversacional que cruza las detecciones con la historia del pozo y el contexto del operador.
+
+Primero física, después datos propios, después IA generativa. En ese orden.
+
+¿Cómo resuelven ustedes el problema de los eventos raros cuando quieren aplicar modelos predictivos?
+
+#OilAndGas #MachineLearning`,
+first:`Cómo funciona el modelo, en detalle: https://inisoftglobal.com/energy-ai/flowback-intelligence-platform`,
+visual:{label:"Imagen",items:["Opcional, sin imagen rinde bien como texto. Si se usa: diagrama simple de 3 etapas (Física → Dataset propio → Agente)."]}},
+
+{id:"p3",date:"2026-10-22",channel:"page",title:"Un paro evitado paga la plataforma",pillar:"Oferta",format:"Imagen",hook:"F1 Anáfora",goal:"Clics",
+text:`Cada falla no detectada en flowback termina en un paro de pad.
+
+Cada paro de pad obliga a re-estabilizar todos los pozos de la locación, no solo el que falló.
+
+Cada re-estabilización suma producción perdida, movilización de equipos y horas de NPT multiplicadas por todo el pad.
+
+Por eso decimos que un solo paro evitado paga la plataforma.
+
+El Flowback Intelligence Platform se conecta a la telemetría que ya tienen y monitorea en continuo la erosión de orificios, el taponamiento y el comportamiento anómalo de presión. Cuando detecta una firma, la alerta llega con un nivel de confianza y una acción recomendada, por ejemplo programar el cambio de choke en la próxima ventana de mantenimiento.
+
+Hay algo que muchos equipos nos piden: independencia. Muchas operaciones dependen de proveedores externos de sensores para ver sus propios activos. Acá el modelo, las alertas y los datos quedan en la nube de la empresa.
+
+Si están por arrancar una campaña de completación, les mostramos cómo funciona con datos de su operación. El link está en el primer comentario.
+
+¿Qué les cuesta más hoy: detectar a tiempo o lograr que el equipo actúe sobre la alerta?
+
+#VacaMuerta`,
+first:`Flowback Intelligence Platform: https://inisoftglobal.com/energy-ai/flowback-intelligence-platform
+Para coordinar una demo, escribinos por mensaje a la página.`,
+visual:{label:"Imagen",items:["Tarjeta de alerta de la landing: \"PAD VM-07 · Pozo 3 · Firma de erosión detectada · T − 9h 14m · Confianza 0,94\".","Agregar la leyenda \"Ejemplo ilustrativo, no son datos reales\", igual que en el sitio."]}},
+
+{id:"p4",date:"2026-10-27",channel:"page",title:"Cómo avisa una bomba PCP",pillar:"Autoridad",format:"Carrusel PDF (6 slides)",hook:"F15 Explicado simple",goal:"Guardados",
+text:`30 días. Es la ventana de probabilidad de falla que mira un supervisor cuando trabaja con nuestro modelo para bombas PCP.
+
+Detrás de ese número hay tres señales que, por separado, parecen ruido: torque que sube, temperatura fuera de rango, vibración que cambia de patrón. Juntas cuentan una historia.
+
+Así lo explicamos cuando nos preguntan qué hace un modelo de mantenimiento predictivo.
+
+Primero aprende de la historia. Entrenamos algoritmos de machine learning con los datos históricos de fallas de cada equipo.
+
+Después mira el presente. Analiza en tiempo real los patrones mecánicos, térmicos y eléctricos de la bomba, junto con el grado de degradación del activo.
+
+Al final, traduce. Un tablero muestra el riesgo de falla, los escenarios posibles y la acción recomendada, con su nivel de urgencia.
+
+La parte que suele sorprender: un agente de IA re-entrena el modelo con datos nuevos y con el feedback de los operadores. El modelo no queda congelado el día que se instala.
+
+En el carrusel, el recorrido completo con un ejemplo de tablero.
+
+¿Qué variable miran primero cuando una bomba empieza a comportarse distinto?
+
+#OilAndGas #MantenimientoPredictivo`,
+first:`Más casos de IA para Oil & Gas: https://inisoftglobal.com/services/energy-ai`,
+visual:{label:"Carrusel",items:["Una bomba PCP avisa antes de fallar. Así la escuchamos.","Tres señales: torque, temperatura y vibración, más el grado de degradación del activo.","Paso 1: aprender de las fallas históricas.","Paso 2: analizar patrones en tiempo real.","Paso 3: tablero con probabilidad de falla a 30 días, escenarios y acción recomendada (captura del tablero de la landing).","El modelo se re-entrena con datos nuevos y feedback de operadores."]}},
+
+{id:"p5",date:"2026-10-28",channel:"page",title:"Encuesta: qué frena la IA",pillar:"Comunidad",format:"Encuesta (1 semana)",hook:"Encuesta",goal:"Comentarios",
+text:`En cada proyecto de IA para Oil & Gas que arrancamos, la primera conversación casi nunca es sobre modelos. Es sobre lo que hay que destrabar antes.
+
+A veces son los datos de SCADA o PI que no se hablan entre sí. A veces es la desconfianza de un operador con 20 años de campo frente a una alerta que no entiende.
+
+Queremos saber qué ven ustedes en sus operaciones. Votá y, si tenés un caso, contalo en los comentarios: vamos a responder cada uno.
+
+¿Qué frena más la IA en tu operación hoy?`,
+first:``,
+visual:{label:"Encuesta",items:["Pregunta: ¿Qué frena más la IA en tu operación hoy?","SCADA/PI sin integrar","Datos sin contexto","Falta de equipo","Confianza del operador","Duración: 1 semana. El jueves 5 de noviembre se puede comentar el resultado."]},
+flag:"\"20 años de campo\" es un ejemplo genérico; cambiarlo si prefieren no usar cifras."},
+
+{id:"p6",date:"2026-10-29",channel:"page",title:"No hace falta reemplazar el SCADA",pillar:"Autoridad",format:"Texto",hook:"F18 Falso dilema",goal:"Reposts",
+text:`Hay dos frases que escuchamos seguido cuando hablamos de IA en una operadora.
+
+La primera: "Para tener IA hay que cambiar el SCADA". La segunda: "Mejor esperamos a tener todo integrado".
+
+Las dos terminan igual: el proyecto no arranca.
+
+Nuestras soluciones se conectan a la tecnología operativa que ya existe: SCADA, DCS y entornos OSIsoft PI. Leemos de sensores, PLCs e historiadores y sumamos una capa de análisis encima, sin reemplazar la infraestructura y con la mínima interrupción a la operación.
+
+Eso permite empezar por un caso de uso concreto, medir el impacto y recién después decidir qué más integrar.
+
+En la práctica, el primer paso es elegir el caso donde un evento evitado tiene el impacto más claro. Una bomba que no se rompe. Un tanque que se mantiene a tiempo. Una cuadrilla que sale con el recorrido optimizado.
+
+¿Qué les llevó más tiempo en su último proyecto de datos: integrar sistemas o decidir por dónde empezar?
+
+#OilAndGas #SCADA`,
+first:`Cómo trabajamos con SCADA, DCS y PI: https://inisoftglobal.com/services/energy-ai`,
+visual:{label:"Imagen",items:["Opcional: esquema SCADA / DCS / PI → capa de análisis Inisoft → alertas y tableros."]}},
+
+{id:"p7",date:"2026-11-03",channel:"page",title:"Décadas de SEG-Y en un NAS",pillar:"Autoridad",format:"Carrusel PDF (7 slides)",hook:"F19 Anécdota + evidencia",goal:"Guardados",
+text:`Décadas de archivos SEG-Y repartidos entre NAS, servidores y buckets.
+
+Es una de las situaciones que más encontramos en las áreas de exploración. La información sísmica existe, pero encontrarla rápido depende de quién se acuerda dónde quedó.
+
+Los síntomas se repiten:
+
+• Metadatos inconsistentes entre campañas
+• Campañas que solo una persona sabe ubicar
+• Catalogación manual
+• Datos históricos que no se vuelven a usar
+
+Para esto existe OSDU, el estándar abierto de interoperabilidad para datos de subsuelo.
+
+Nuestro trabajo es llevar esos repositorios a una plataforma basada en OSDU: migrar desde NAS, servidores o S3, construir un catálogo único, recuperar y completar metadatos de forma automática y dejar reglas de gobierno para propiedad, versionado y trazabilidad.
+
+El resultado práctico: los equipos dejan de depender de la memoria de las personas para encontrar una campaña, y los datos quedan listos para machine learning e IA generativa.
+
+En el carrusel, los síntomas y la ruta de migración paso a paso.
+
+¿Cuánto tarda hoy su equipo en encontrar una campaña sísmica de hace 15 años?
+
+#OSDU #Exploración`,
+first:`Modernización de datos sísmicos con OSDU: https://inisoftglobal.com/energy-ai/osdu`,
+visual:{label:"Carrusel",items:["Décadas de SEG-Y en un NAS.","Los 4 síntomas.","Qué es OSDU, en una línea.","1. Migración desde NAS, servidores, S3 o Azure Blob.","2. Catálogo centralizado de campañas.","3. Metadatos recuperados y estandarizados + gobierno de datos.","Datos listos para ML e IA generativa. Link en el primer comentario."]}},
+
+{id:"p8",date:"2026-11-04",channel:"page",title:"La campaña que nadie encontraba",pillar:"Detrás de escena",format:"Texto",hook:"F9 Intriga",goal:"Comentarios",
+text:`La campaña sísmica que nadie encontraba no estaba perdida. Estaba en la memoria de una sola persona del equipo.
+
+Lo vemos cada vez que empezamos un proyecto de modernización de datos sísmicos. La información está, pero el acceso depende de quién sabe dónde se guardó, con qué nombre y en qué formato.
+
+Mientras esa persona sigue en la empresa, funciona. El día que se jubila, cambia de área o se va, la campaña deja de existir a efectos prácticos.
+
+Por eso una de las primeras piezas que construimos con OSDU es el catálogo: un único lugar donde cada campaña se puede encontrar, con los metadatos recuperados de los propios archivos.
+
+Después llegan la migración a la plataforma nueva y las reglas de gobierno. Pero el cambio que más se nota en el día a día es otro: cualquier geofísico del equipo puede encontrar lo que necesita sin tener que preguntarle a nadie.
+
+¿En su organización hay alguien que sea "el que sabe dónde está todo"?
+
+#OSDU #DatosSísmicos`,
+first:`Cómo trabajamos la modernización de datos sísmicos: https://inisoftglobal.com/energy-ai/osdu`,
+visual:{label:"Imagen",items:["Sin imagen, o una foto real de racks/servidores de un cliente si hay permiso."]},
+flag:"Confirmar con el equipo que el catálogo es efectivamente de las primeras entregas en estos proyectos."},
+
+{id:"p9",date:"2026-11-05",channel:"page",title:"El equipo detrás de Energy AI",pillar:"Comunidad",format:"Foto del equipo",hook:"F14 Agradecimiento con nombres",goal:"Reposts",
+text:`Este mes contamos cómo detectamos fallas de flowback en Vaca Muerta, cómo anticipamos fallas en bombas PCP y cómo ordenamos décadas de datos sísmicos con OSDU.
+
+Detrás de cada uno de esos proyectos hay personas con nombre y apellido.
+
+[Nombre Apellido], [rol], que [aporte concreto en una línea].
+
+[Nombre Apellido], [rol], que [aporte concreto en una línea].
+
+[Nombre Apellido], [rol], que [aporte concreto en una línea].
+
+[Nombre Apellido], [rol], que [aporte concreto en una línea].
+
+Y los partners con los que construimos todo esto: Aleph Energy, que aporta el conocimiento profundo del negocio energético, y Amazon Web Services (AWS), donde corren muchas de nuestras soluciones.
+
+Hacer IA que funcione en un pad o en un yacimiento requiere saber de datos y también saber de operación. Este equipo hace las dos cosas.
+
+¿A quién de su equipo le darían hoy las gracias por un proyecto que salió bien?`,
+first:``,
+visual:{label:"Foto",items:["Foto real del equipo (no de stock), idealmente en campo o en un evento.","Etiquetar a cada persona y a Aleph Energy y AWS."]},
+flag:"Completar nombres, roles y aportes, y pedir el OK de cada persona antes de etiquetarla."},
+
+{id:"p10",date:"2026-11-10",channel:"page",title:"Dos operadoras, mismos sensores",pillar:"Autoridad",format:"Carrusel PDF (8 slides)",hook:"F20 Curvas que divergen",goal:"Guardados",
+text:`Dos operadoras con los mismos sensores pueden terminar en lugares muy distintos con la IA.
+
+La primera conecta cada sistema con integraciones punto a punto. SCADA por un lado, el historiador por otro, los datos de pozos en otra aplicación. Cada caso de uso nuevo empieza con un proyecto de integración nuevo.
+
+La segunda invierte primero en una visión unificada: producción, pozos, reservorio y mantenimiento, con las mismas definiciones de activo, pozo y campo en todos los sistemas.
+
+Al principio, la primera va más rápido. Su primer piloto sale antes.
+
+Con el tiempo, las curvas se separan. La segunda suma casos de uso sobre la misma base: búsqueda semántica, asistentes, modelos predictivos. La primera vuelve a empezar cada vez.
+
+La IA necesita datos organizados, confiables y accesibles. Es la parte menos vistosa del trabajo y la que decide si un piloto llega a producción.
+
+En el carrusel, las seis piezas de una plataforma de datos de energía preparada para IA.
+
+¿Su organización se parece más a la primera o a la segunda?
+
+#OilAndGas #DataEngineering`,
+first:`Plataformas de datos para energía: https://inisoftglobal.com/energy-ai/osdu`,
+visual:{label:"Carrusel",items:["Mismos sensores. Dos caminos.","Operadora A: integraciones punto a punto.","Operadora B: modelo de datos común.","Gráfico de dos curvas (ilustrativo, sin números): A arranca antes, B escala después.","Las 6 piezas: 1. Datos sísmicos · 2. Pozos","3. Producción · 4. Reservorio","5. Gobierno de datos · 6. Plataforma lista para IA","Link en el primer comentario."]}},
+
+{id:"p11",date:"2026-11-11",channel:"page",title:"Asistente de exploración para cobre",pillar:"Autoridad",format:"Texto + imagen",hook:"F19 Anécdota + evidencia",goal:"Comentarios",
+text:`Un geólogo que evalúa un prospecto de pórfido de cobre tiene que cruzar tres fuentes que casi nunca están en el mismo lugar: documentación geológica, mapas geofísicos y tablas geoquímicas.
+
+Para ese trabajo construimos un asistente de exploración con IA para minería en Argentina.
+
+Funciona con RAG (generación aumentada por recuperación). El agente busca en la documentación del proyecto, recupera lo relevante de cada fuente y propone una clasificación cualitativa del potencial del área.
+
+El resultado es una primera lectura ordenada que el equipo de geología revisa, discute y ajusta. El criterio sigue siendo de los especialistas; el asistente les ahorra la parte de buscar y cruzar.
+
+Es el mismo principio que aplicamos en Oil & Gas: la IA rinde más cuando acelera a quien ya sabe del negocio.
+
+Y vale lo mismo que contamos la semana pasada sobre los datos sísmicos: un asistente así es tan bueno como la documentación sobre la que trabaja.
+
+¿Qué parte del trabajo de exploración les gustaría acelerar primero?
+
+#Minería #Cobre`,
+first:`Más sobre IA para minería y energía: https://inisoftglobal.com/services/energy-ai`,
+visual:{label:"Imagen",items:["Captura o mockup del asistente mostrando una consulta y la clasificación resultante (sin datos del cliente)."]},
+flag:"Confirmar que el cliente permite mencionar el caso públicamente. Usa F19 en lugar de F5 (Meta), que no encajaba con el tema."},
+
+{id:"p12",date:"2026-11-12",channel:"page",title:"No te vamos a vender una plataforma",pillar:"Oferta",format:"Texto",hook:"F13 Giro inesperado",goal:"Clics",
+text:`No te vamos a vender una plataforma de IA. Al menos no al principio.
+
+Cada proyecto con una empresa de energía empieza igual: identificar los casos de uso de mayor impacto en su operación, para que los resultados se puedan medir desde el primer día.
+
+Este mes mostramos algunos. Predicción de eventos de flowback en Vaca Muerta. Mantenimiento predictivo de bombas PCP. Modernización de datos sísmicos con OSDU. Un asistente de exploración para cobre.
+
+Todos empezaron por una pregunta operativa concreta.
+
+Si tienen una operación con datos de SCADA, PI o sensores y un problema que se repite, les proponemos una conversación de diagnóstico. Revisamos juntos su contexto y les decimos dónde vemos el caso de mayor impacto. Si no vemos uno claro, también se lo vamos a decir.
+
+El contacto está en el primer comentario.
+
+¿Cuál es el evento operativo que más les gustaría dejar de ver el año que viene?
+
+#OilAndGas #Minería`,
+first:`Para coordinar el diagnóstico: https://inisoftglobal.com/services/energy-ai (formulario de contacto) o por mensaje a la página.`,
+visual:{label:"Imagen",items:["Opcional: collage con las 4 piezas del mes."]},
+flag:"Confirmar que la conversación de diagnóstico es una oferta real y sin costo."},
+
+{id:"m1",date:"2026-10-22",channel:"personal",title:"Mariano: la primera alerta antes que el operador"},
+{id:"m2",date:"2026-10-29",channel:"personal",title:"Mariano: el problema no era la falta de datos"},
+{id:"m3",date:"2026-11-05",channel:"personal",title:"Mariano: GenAI y datos sísmicos"},
+{id:"m4",date:"2026-11-12",channel:"personal",title:"Mariano: lo que aprendimos en 4 semanas"}
+];
+
+const DOW=["Lunes","Martes","Miércoles","Jueves","Viernes"];
+const WEEKS=[["2026-10-19","Semana 1","Flowback Intelligence Platform"],["2026-10-26","Semana 2","Energy AI en operación"],["2026-11-02","Semana 3","OSDU y datos de subsuelo"],["2026-11-09","Semana 4","Datos listos para IA y minería"]];
+const fmtDay=d=>new Date(d+"T12:00:00").toLocaleDateString("es-AR",{weekday:"short",day:"numeric",month:"short"});
+const addDays=(iso,n)=>{const d=new Date(iso+"T12:00:00");d.setDate(d.getDate()+n);return d.toISOString().slice(0,10)};
+const esc=s=>s.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+const cal=document.getElementById("cal");
+DOW.forEach(d=>{const e=document.createElement("div");e.className="dow";e.textContent=d;cal.appendChild(e)});
+WEEKS.forEach(([start,label,theme])=>{
+  const w=document.createElement("div");w.className="wk";w.innerHTML=`${label} <span>${theme}</span>`;cal.appendChild(w);
+  for(let i=0;i<5;i++){
+    const iso=addDays(start,i),posts=POSTS.filter(p=>p.date===iso);
+    const c=document.createElement("div");c.className="cell"+(posts.length?"":" off");
+    const dd=new Date(iso+"T12:00:00");
+    c.innerHTML=`<span class="d"><b>${dd.getDate()}</b> ${dd.toLocaleDateString("es-AR",{month:"short"})}</span>`+
+      posts.map(p=>p.channel==="page"
+        ?`<a class="ev" href="#${p.id}"><small>8:30 · ${esc(p.format.split(" (")[0])}</small>${esc(p.title)}</a>`
+        :`<span class="ev pers"><small>Perfil personal · pendiente</small>${esc(p.title.replace("Mariano: ",""))}</span>`).join("");
+    cal.appendChild(c);
+  }
+});
+
+const box=document.getElementById("drafts");
+POSTS.filter(p=>p.channel==="page").forEach(p=>{
+  const a=document.createElement("article");a.className="draft";a.id=p.id;
+  a.innerHTML=`<aside><span class="when">${fmtDay(p.date)} · 8:30</span>
+    <dl><dt>Pilar</dt><dd>${p.pillar}</dd><dt>Formato</dt><dd>${esc(p.format)}</dd><dt>Gancho</dt><dd>${p.hook}</dd><dt>Objetivo</dt><dd>${p.goal}</dd></dl></aside>
+    <div class="main"><h3>${esc(p.title)} <span class="count">${p.text.length.toLocaleString("es-AR")} caracteres</span></h3>
+    ${p.flag?`<div class="flag">${esc(p.flag)}</div>`:""}
+    <div class="text" id="t-${p.id}">${esc(p.text)}</div>
+    <div class="actions"><button type="button" data-copy="t-${p.id}">Copiar texto</button>${p.first?`<button type="button" class="ghost" data-copy="f-${p.id}">Copiar primer comentario</button>`:""}<span class="status" aria-live="polite"></span></div>
+    ${p.first?`<div class="block"><span class="lbl">Primer comentario (publicarlo enseguida)</span><p id="f-${p.id}">${esc(p.first)}</p></div>`:""}
+    <div class="block"><span class="lbl">${p.visual.label}</span>${p.visual.label==="Carrusel"?"<ol>":"<ul>"}${p.visual.items.map(i=>`<li>${esc(i)}</li>`).join("")}${p.visual.label==="Carrusel"?"</ol>":"</ul>"}</div></div>`;
+  box.appendChild(a);
+});
+
+box.addEventListener("click",e=>{
+  const b=e.target.closest("button[data-copy]");if(!b)return;
+  const el=document.getElementById(b.dataset.copy),st=b.parentElement.querySelector(".status");
+  const sel=()=>{const r=document.createRange();r.selectNodeContents(el);const s=getSelection();s.removeAllRanges();s.addRange(r);st.textContent="Texto seleccionado: copialo con Ctrl+C o Cmd+C";};
+  try{navigator.clipboard.writeText(el.textContent).then(()=>{st.textContent="Copiado";setTimeout(()=>st.textContent="",2000)},sel)}catch(_){sel()}
+});
+</script>
