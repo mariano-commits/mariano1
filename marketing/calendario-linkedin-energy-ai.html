@@ -56,6 +56,16 @@ header{display:flex;flex-direction:column;gap:14px;border-bottom:2px solid var(-
 .draft:target{outline:2px solid var(--accent)}
 .draft aside{border-right:1px solid var(--line);padding:16px;display:flex;flex-direction:column;gap:10px;background:var(--sunk)}
 .draft aside .when{font:600 1.35rem/1 var(--display)}
+.draft aside .chan{font:500 .68rem var(--mono);text-transform:uppercase;letter-spacing:.1em;color:var(--accent)}
+.draft.personal{border-style:dashed}
+.draft.personal aside .chan{color:var(--muted)}
+.profile{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+.profile .card{background:var(--surface);border:1px solid var(--line);padding:14px 16px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.profile .card b{font:600 1.8rem/1 var(--display);font-variant-numeric:tabular-nums}
+.profile .card span{font-size:.85rem;color:var(--muted)}
+.notes{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px 28px}
+.notes div{display:flex;flex-direction:column;gap:6px;min-width:0}
+.notes ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:4px;font-size:.9rem}
 .draft aside dl{display:grid;grid-template-columns:auto 1fr;gap:4px 10px;margin:0;font-size:.8rem}
 .draft aside dt{font:500 .66rem var(--mono);text-transform:uppercase;letter-spacing:.08em;color:var(--muted);padding-top:2px}
 .draft aside dd{margin:0;min-width:0}
@@ -82,8 +92,8 @@ footer{font:400 .8rem var(--mono);color:var(--muted);border-top:1px solid var(--
   <header>
     <span class="eyebrow">Inisoft Global · LinkedIn · Energy AI</span>
     <h1>Calendario y borradores, 20 oct – 12 nov 2026</h1>
-    <p class="muted">12 publicaciones para la página, listas para revisar y copiar. Martes, miércoles y jueves a las 8:30 (hora Argentina). Los 4 posts de Mariano figuran en el calendario y esperan sus historias reales.</p>
-    <div class="legend"><span><i class="sw page"></i>Página Inisoft Global (borrador listo)</span><span><i class="sw pers"></i>Perfil de Mariano (pendiente)</span></div>
+    <p class="muted">16 publicaciones listas para revisar y copiar: 12 para la página (martes, miércoles y jueves a las 8:30, hora Argentina) y 4 para el perfil de Mariano (jueves a las 12:30 en Argentina, 17:30 en Barcelona, para no competir con el post de la página de esa mañana).</p>
+    <div class="legend"><span><i class="sw page"></i>Página Inisoft Global</span><span><i class="sw pers"></i>Perfil de Mariano</span></div>
   </header>
 
   <div class="callout">
@@ -97,6 +107,31 @@ footer{font:400 .8rem var(--mono);color:var(--muted);border-top:1px solid var(--
   </div>
 
   <section>
+    <span class="eyebrow">Perfil de Mariano · datos de Apify</span>
+    <h2>Punto de partida del perfil personal</h2>
+    <div class="profile">
+      <div class="card"><b>7.901</b><span>seguidores: 2,6 veces los de la página de Inisoft</span></div>
+      <div class="card"><b>5 de 50</b><span>publicaciones propias entre dic-2024 y oct-2026; el resto son reposts</span></div>
+      <div class="card"><b>1–15</b><span>reacciones por post propio o repost con comentario corto</span></div>
+      <div class="card"><b>34–85</b><span>reacciones en posts de Cele Amichetti y de AWS que mencionan a Inisoft</span></div>
+    </div>
+    <div class="notes">
+      <div><h3>Lo que muestran los datos</h3><ul>
+        <li>Tu perfil tiene más alcance potencial que la página, pero casi no publicás contenido propio.</li>
+        <li>Los reposts con una línea ("to infinity and beyond 🚀") casi no suman alcance.</li>
+        <li>Los posts que mejor funcionan en tu red los escriben otros (Cele, AWS) y cuentan eventos de energía con nombres.</li>
+        <li>El titular y el "Acerca de" (en inglés) hablan de IT y staff augmentation y no mencionan Oil &amp; Gas ni minería.</li>
+      </ul></div>
+      <div><h3>Cómo están escritos tus posts</h3><ul>
+        <li>Español rioplatense, cálido y directo, con frases cortas.</li>
+        <li>Agradecés a las personas por su nombre.</li>
+        <li>El 🚀 y "to infinity and beyond" son tu firma: van como P.S., no como cuerpo del post.</li>
+        <li>Toques de humor ("a coffee or better a canya").</li>
+      </ul></div>
+    </div>
+  </section>
+
+  <section>
     <span class="eyebrow">Calendario</span>
     <h2>Cuatro semanas</h2>
     <div class="cal-scroll"><div class="cal" id="cal"></div></div>
@@ -104,7 +139,7 @@ footer{font:400 .8rem var(--mono);color:var(--muted);border-top:1px solid var(--
 
   <section>
     <span class="eyebrow">Borradores</span>
-    <h2>Publicaciones de la página</h2>
+    <h2>Todas las publicaciones, en orden</h2>
     <div class="drafts" id="drafts"></div>
   </section>
 
@@ -358,10 +393,83 @@ first:`Para coordinar el diagnóstico: https://inisoftglobal.com/services/energy
 visual:{label:"Imagen",items:["Opcional: collage con las 4 piezas del mes."]},
 flag:"Confirmar que la conversación de diagnóstico es una oferta real y sin costo."},
 
-{id:"m1",date:"2026-10-22",channel:"personal",title:"Mariano: la primera alerta antes que el operador"},
-{id:"m2",date:"2026-10-29",channel:"personal",title:"Mariano: el problema no era la falta de datos"},
-{id:"m3",date:"2026-11-05",channel:"personal",title:"Mariano: GenAI y datos sísmicos"},
-{id:"m4",date:"2026-11-12",channel:"personal",title:"Mariano: lo que aprendimos en 4 semanas"}
+{id:"m1",date:"2026-10-22",channel:"personal",title:"De hacer de todo a IA para Oil & Gas",pillar:"Detrás de escena",format:"Texto",hook:"F3 Antes y ahora",goal:"Comentarios",
+text:`En julio de 2022 fundamos Inisoft Global. Si en ese momento me preguntaban qué hacíamos, la respuesta era larga: equipos de ingeniería de datos para quien los necesitara.
+
+Venía de más de 20 años en IT. Finanzas, gaming, retail, agtech, fintech, insurtech, hotelería. Project manager en Globant, CTO en LBO, cofundador de otra startup. Saber un poco de todo era nuestra carta de presentación.
+
+Hoy la respuesta es mucho más corta: IA para Oil & Gas y minería.
+
+El cambio no fue una decisión de una tarde. Nos dimos cuenta de que los proyectos donde más impacto generábamos eran los que estaban cerca de la operación: un pozo, una bomba, un pad. Ahí un dato bien leído a tiempo evita un paro, y eso se mide.
+
+En 2025 nos aliamos con Aleph Energy para sumar el conocimiento del negocio energético que a nosotros nos faltaba. Después vinieron los eventos con AWS, la OTC en Houston y el Upstream AI en Buenos Aires. Esta semana mostramos en la página de Inisoft cómo detectamos fallas de flowback en Vaca Muerta.
+
+Especializarse da un poco de vértigo, porque implica decir que no a muchas cosas. Pero también te obliga a saber de verdad de qué estás hablando.
+
+¿En qué momento decidieron ustedes dejar de hacer de todo para hacer una cosa bien?
+
+P.S. Inisoft Global to infinity and beyond 🚀`,
+first:``,
+visual:{label:"Imagen",items:["Foto tuya en campo o en un evento de energía (OTC, Upstream AI). Sin imagen también funciona."]},
+flag:"Confirmar el motivo del cambio (\"los proyectos con más impacto eran los cercanos a la operación\") y que te sentís cómodo con \"decir que no a muchas cosas\". Las fechas y la trayectoria salen de tu perfil."},
+
+{id:"m2",date:"2026-10-29",channel:"personal",title:"Vaca Muerta desde Barcelona",pillar:"Detrás de escena",format:"Texto + foto",hook:"F4 Confesión con dato",goal:"Comentarios",
+text:`Dirijo una empresa que trabaja en Vaca Muerta desde Barcelona. Entre mi escritorio y el pad más cercano hay más de 10.000 km.
+
+Cuando lo cuento, la primera reacción suele ser de sorpresa. La segunda es una pregunta: cómo se hace.
+
+La respuesta corta es que el equipo está donde tiene que estar. Nuestra gente de datos e IA trabaja cerca de la operación y de los clientes. Desde España abrimos Inisoft Global Europa a fines de 2025 y me muevo en el ecosistema europeo: el MWC, el hub tecnológico del Consulado argentino en Barcelona, las misiones comerciales.
+
+Lo que más me enseñó la distancia es a delegar de verdad. No puedo estar en cada reunión técnica, y tampoco hace falta. Cele Amichetti, Mauro Cocco, Juan Cruz Borba y el resto del equipo saben más que yo de cada caso. Mi trabajo pasa por otro lado: abrir puertas, elegir en qué industrias jugamos y cuidar que el equipo tenga lo que necesita.
+
+Además tiene ventajas. Lo que hacemos en Vaca Muerta despierta mucha curiosidad de este lado del océano, y cada conversación en Europa me deja ideas para llevar de vuelta.
+
+¿Cómo manejan ustedes un equipo o un cliente a miles de kilómetros?
+
+#VacaMuerta #Barcelona`,
+first:``,
+visual:{label:"Foto",items:["Foto tuya en Barcelona (MWC o el hub del Consulado). Etiquetar a Cele, Mauro y Juan Cruz con su OK."]},
+flag:"Confirmar dónde trabaja hoy el equipo de datos e IA y cómo describís tu rol. Etiquetar a Cele, Mauro y Juan Cruz solo con su OK."},
+
+{id:"m3",date:"2026-11-05",channel:"personal",title:"GenAI no falla por el modelo",pillar:"Autoridad",format:"Texto",hook:"F10 Contrario",goal:"Comentarios",
+text:`Tu iniciativa de IA generativa en exploración no va a fallar por el modelo. Va a fallar porque tus datos sísmicos no están listos.
+
+Lo repetimos mucho puertas adentro en Inisoft, y volvió a aparecer hace unas semanas: en la AWS Energy Week de Houston, buena parte de los casos de IA agéntica para energía giraban alrededor de sísmica, reservorios y producción.
+
+Los modelos mejoran cada pocos meses y son cada vez más accesibles. Los datos sísmicos de una operadora, en cambio, muchas veces siguen donde estaban hace décadas: archivos SEG-Y repartidos en NAS y servidores, metadatos inconsistentes, campañas que solo una persona sabe ubicar.
+
+Un asistente que responde preguntas sobre el subsuelo es tan bueno como lo que puede encontrar. Si parte de la información no está catalogada, el asistente no la ve, y lo que no ve no lo puede usar.
+
+Por eso esta semana en la página de Inisoft Global hablamos de OSDU. No es el tema más vistoso de la IA, pero es el que decide si un piloto de exploración llega a producción.
+
+¿En qué está hoy su empresa: eligiendo modelo u ordenando datos?
+
+#OSDU #GenAI`,
+first:`Lo que contamos esta semana sobre OSDU: https://inisoftglobal.com/energy-ai/osdu`,
+visual:{label:"Imagen",items:["Sin imagen. Rinde mejor como texto."]},
+flag:"La referencia a Houston sale del post de Cele sobre la AWS Energy Week (oct. 2026). Si no estuviste, queda bien como está porque habla del equipo."},
+
+{id:"m4",date:"2026-11-12",channel:"personal",title:"Lo que aprendimos en 4 semanas",pillar:"Comunidad",format:"Texto",hook:"F16 Humildad",goal:"Likes",
+text:`Hace cuatro semanas la página de Inisoft Global llevaba cinco meses y medio sin publicar. Lo digo con algo de vergüenza: somos una empresa de datos y no estábamos mirando los nuestros.
+
+Cuando los miramos, la conclusión fue clara. Los posts genéricos sobre IA casi no los leía nadie. Los que contaban casos reales de Oil & Gas, con datos y nombres, tenían entre cinco y diez veces más interacción.
+
+Así que durante cuatro semanas publicamos solo eso: 12 posts sobre flowback en Vaca Muerta, bombas PCP, OSDU y minería.
+
+[COMPLETAR el 11/11 con Windsor: impresiones del período contra las de octubre antes de arrancar, comentarios y seguidores nuevos].
+
+Lo que más me sorprendió: [COMPLETAR: qué post funcionó mejor y por qué creés que pasó].
+
+Lo que me llevo es que mostrar el trabajo da menos miedo del que parece, y conecta más que cualquier frase sobre transformación digital.
+
+Gracias al equipo que lo hizo posible.
+
+¿Ustedes muestran lo que hacen o solo lo que venden?
+
+P.S. Inisoft Global to infinity and beyond 🚀`,
+first:``,
+visual:{label:"Imagen",items:["Captura simple de la curva de impresiones del mes (Windsor)."]},
+flag:"Tiene huecos para los resultados reales. Los completo con Windsor el 11 de noviembre."}
 ];
 
 const DOW=["Lunes","Martes","Miércoles","Jueves","Viernes"];
@@ -381,15 +489,15 @@ WEEKS.forEach(([start,label,theme])=>{
     c.innerHTML=`<span class="d"><b>${dd.getDate()}</b> ${dd.toLocaleDateString("es-AR",{month:"short"})}</span>`+
       posts.map(p=>p.channel==="page"
         ?`<a class="ev" href="#${p.id}"><small>8:30 · ${esc(p.format.split(" (")[0])}</small>${esc(p.title)}</a>`
-        :`<span class="ev pers"><small>Perfil personal · pendiente</small>${esc(p.title.replace("Mariano: ",""))}</span>`).join("");
+        :`<a class="ev pers" href="#${p.id}"><small>Mariano · 12:30</small>${esc(p.title)}</a>`).join("");
     cal.appendChild(c);
   }
 });
 
 const box=document.getElementById("drafts");
-POSTS.filter(p=>p.channel==="page").forEach(p=>{
-  const a=document.createElement("article");a.className="draft";a.id=p.id;
-  a.innerHTML=`<aside><span class="when">${fmtDay(p.date)} · 8:30</span>
+[...POSTS].sort((x,y)=>x.date.localeCompare(y.date)||(x.channel==="page"?-1:1)).forEach(p=>{
+  const a=document.createElement("article");a.className="draft"+(p.channel==="personal"?" personal":"");a.id=p.id;
+  a.innerHTML=`<aside><span class="chan">${p.channel==="page"?"Página Inisoft Global":"Perfil de Mariano"}</span><span class="when">${fmtDay(p.date)} · ${p.channel==="page"?"8:30":"12:30"}</span>
     <dl><dt>Pilar</dt><dd>${p.pillar}</dd><dt>Formato</dt><dd>${esc(p.format)}</dd><dt>Gancho</dt><dd>${p.hook}</dd><dt>Objetivo</dt><dd>${p.goal}</dd></dl></aside>
     <div class="main"><h3>${esc(p.title)} <span class="count">${p.text.length.toLocaleString("es-AR")} caracteres</span></h3>
     ${p.flag?`<div class="flag">${esc(p.flag)}</div>`:""}
